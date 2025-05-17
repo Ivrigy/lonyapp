@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import logo from "../assets/logo.png";
 
@@ -9,7 +9,7 @@ const NavBar = () => {
         <Navbar.Brand className="ps-3"> <img src={logo} alt="logo" height="35" /> </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto">
+          <Nav className="ms-auto pe-3">
             <Nav.Link>
                 <i class="bi bi-house"></i>{' '}
                 Home
