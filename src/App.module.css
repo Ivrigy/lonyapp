@@ -4,34 +4,37 @@
     min-height: 100vh;
 }
 
+.Main {
+    padding-top: 82px;
+}
 
 * {
     box-sizing: border-box;
 }
 
 a {
-    color: #353333;
-    transition: color ease-in-out 0.3s;
+    color: #100426;
+    text-decoration: none;
+    padding-right: 7px;
 }
 
 a:hover {
     text-decoration: none;
+    color: #FF781F;
 }
 
 a:hover i {
   color: #FF781F;
-  transition: color ease-in-out 0.3s;
 }
 
 i {
-    color: #cfced3;
+    color: #494252;
     font-size: 1.3rem;
-    padding: 7px;
-    vertical-align: middle;
+    padding: 3px;
+    vertical-align: baseline;
 }
 
 i:hover {
     cursor: pointer;
-    transition: color ease-in-out 0.3s;
     color: #FF781F;
 }
