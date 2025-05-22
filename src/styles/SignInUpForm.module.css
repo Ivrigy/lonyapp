@@ -9,6 +9,7 @@
   color: #7177a1;
   text-align: center;
   padding: 10px;
+  margin-bottom: 1rem;
 }
 
 .Header {
@@ -19,7 +20,8 @@
   text-align: center;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #2142b2;
+  color: #7067CF;
+  margin-bottom: 15px;
 }
 
 .Link {
@@ -30,7 +32,8 @@
 }
 
 .Link span {
-  color: #ff9254;
+  color:#FF781F;
+;
 }
 
 .Container {

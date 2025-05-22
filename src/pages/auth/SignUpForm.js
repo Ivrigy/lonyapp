@@ -11,8 +11,8 @@ const SignUpForm = () => {
   return (
     <Row className={styles.Row}>
       <Col className="my-auto py-2 p-md-2" md={6}>
-        <Container className={`${appStyles.Content} p-4 `}>
-          <h1 className={styles.Header}>sign up</h1>
+        <Container className={`${appStyles.Content} p-4 shadow-lg rounded`}>
+          <h1 className={styles.Header}>create new account</h1>
 
           <Form>
             <Form.Group controlId="username">
@@ -52,7 +52,7 @@ const SignUpForm = () => {
             </Button>
           </Form>
         </Container>
-        <Container className={`mt-3 ${appStyles.Content}`}>
+        <Container className={`mt-3 ${appStyles.Content} shadow-lg rounded`}>
           <Link className={styles.Link} to="/signin">
             Already have an account? <span>Sign in</span>
           </Link>
@@ -63,7 +63,7 @@ const SignUpForm = () => {
         className={`my-auto d-none d-md-block p-2 ${styles.SignUpCol}`}
       >
         <Image
-          className={`${appStyles.FillerImage}`}
+          className={`${appStyles.FillerImage} `}
           src={
             "https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
           }
