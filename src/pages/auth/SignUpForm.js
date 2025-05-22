@@ -14,8 +14,43 @@ const SignUpForm = () => {
         <Container className={`${appStyles.Content} p-4 `}>
           <h1 className={styles.Header}>sign up</h1>
 
-            {/* add your form here */}
+          <Form>
+            <Form.Group controlId="username">
+              <Form.Label className="d-none">username</Form.Label>
+              <Form.Control
+                className={styles.Input}
+                type="text"
+                placeholder="username"
+                name="username"
+              />
+            </Form.Group>
 
+            <Form.Group controlId="password1">
+              <Form.Label className="d-none">Password</Form.Label>
+              <Form.Control
+                className={styles.Input}
+                type="password"
+                placeholder="password"
+                name="password1"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="password2">
+              <Form.Label className="d-none">Confirm password</Form.Label>
+              <Form.Control
+                className={styles.Input}
+                type="password"
+                placeholder="confirm password"
+                name="password2"
+              />
+            </Form.Group>
+            <Button
+              className={`${btnStyles.Button} ${btnStyles.Wide} ${btnStyles.Bright}`}
+              type="submit"
+            >
+              Sign up
+            </Button>
+          </Form>
         </Container>
         <Container className={`mt-3 ${appStyles.Content}`}>
           <Link className={styles.Link} to="/signin">
@@ -30,7 +65,7 @@ const SignUpForm = () => {
         <Image
           className={`${appStyles.FillerImage}`}
           src={
-            "https://codeinstitute.s3.amazonaws.com/AdvancedReact/hero2.jpg"
+            "https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
           }
         />
       </Col>
