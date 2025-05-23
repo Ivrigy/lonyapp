@@ -3,8 +3,31 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import logo from "../assets/logo.png";
 import styles from "../styles/NavBar.module.css";
 import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { CurrentUserContext } from "../App";
 
 const NavBar = () => {
+  const currentUser = useContext(CurrentUserContext);
+  const loggedInIcons = <>{currentUser?.username}</>;
+  const loggedOutIcons = (
+    <>
+      <NavLink
+        to="/signin"
+        activeClassName={styles.Active}
+        className="nav-link"
+      >
+        <i className="bi bi-door-open"></i> Sign in
+      </NavLink>
+      <NavLink
+        to="/signup"
+        activeClassName={styles.Active}
+        className="nav-link"
+      >
+        <i className="bi bi-door-closed-fill"></i> Sign up
+      </NavLink>
+    </>
+  );
+
   return (
     <Navbar className={styles.NavBar} expand="md" fixed="top">
       <Container fluid className="px-3">
@@ -16,16 +39,15 @@ const NavBar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ps-3 pe-3 ms-md-auto text-start">
-            <NavLink exact
-            to="/" activeClassName={styles.Active}>
-              <i class="bi bi-house-door"></i>Home
+            <NavLink
+              exact
+              to="/"
+              activeClassName={styles.Active}
+              className="nav-link"
+            >
+              <i className="bi bi-house-door"></i> Home{" "}
             </NavLink>
-            <NavLink to="/signin" activeClassName={styles.Active}>
-              <i class="bi bi-door-open"></i> Sign in
-            </NavLink>
-            <NavLink to="/signup" activeClassName={styles.Active}>
-              <i class="bi bi-door-closed-fill"></i> Sign up
-            </NavLink>
+            {currentUser ? loggedInIcons : loggedOutIcons}
           </Nav>
         </Navbar.Collapse>
       </Container>
