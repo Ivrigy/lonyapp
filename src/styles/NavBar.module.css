@@ -3,6 +3,11 @@
     padding-top: 10px;
     
 }
+
+.NavLink {
+  padding: 5px;
+}
+
 .NavBar a {
     margin: 8px;
 }

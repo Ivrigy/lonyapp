@@ -7,20 +7,22 @@ import { useCurrentUser } from "../contexts/CurrentUserContext";
 
 const NavBar = () => {
   const currentUser = useCurrentUser();
-  const loggedInIcons = <>{currentUser?.username}</>;
+  // console.log("NavBar context →", currentUser);
+
+  const loggedInIcons = <> {currentUser?.username} </>;
   const loggedOutIcons = (
     <>
       <NavLink
         to="/signin"
         activeClassName={styles.Active}
-        className="nav-link"
+        className={styles.NavLink}
       >
         <i className="bi bi-door-open"></i> Sign in
       </NavLink>
       <NavLink
         to="/signup"
         activeClassName={styles.Active}
-        className="nav-link"
+        className={styles.NavLink}
       >
         <i className="bi bi-door-closed-fill"></i> Sign up
       </NavLink>
