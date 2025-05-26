@@ -26,7 +26,6 @@ function SignInForm() {
     username: "",
     password: "",
   });
-
   const { username, password } = signInData;
 
   const [errors, setErrors] = useState({});
@@ -50,6 +49,7 @@ function SignInForm() {
       [event.target.name]: event.target.value,
     });
   };
+
 
   return (
     <Row className={styles.Row}>
