@@ -43,6 +43,7 @@ export const CurrentUserProvider = ({ children }) => {
         return config;
       },
       (err) => {
+        console.log('REFRESH TOKEN', {err})
         return Promise.reject(err);
       }
     );
@@ -54,6 +55,7 @@ export const CurrentUserProvider = ({ children }) => {
           try {
             await axios.post("/dj-rest-auth/token/refresh/");
           } catch (err) {
+            console.log('SIGN_IN', {err})
             setCurrentUser((prevCurrentUser) => {
               if (prevCurrentUser) {
                 history.push("/signin");
