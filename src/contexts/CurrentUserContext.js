@@ -49,7 +49,7 @@ export const CurrentUserProvider = ({ children }) => {
             await axiosReq.post("/dj-rest-auth/token/refresh/", null, {
               withCredentials: true, // ✅ Again
             });
-            return axios(err.config);
+            return axiosRes(err.config);
           } catch (refreshErr) {
             setCurrentUser((prevCurrentUser) => {
               if (prevCurrentUser) {
