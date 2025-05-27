@@ -9,6 +9,7 @@ export const useSetCurrentUser = () => useContext(SetCurrentUserContext);
 export const CurrentUserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const history = useHistory();
+  
   useEffect(() => {
   const handleMount = async () => {
     try {
@@ -25,12 +26,12 @@ export const CurrentUserProvider = ({ children }) => {
   handleMount();
 }, []);
 
-  useMemo(() => {
+  useEffect(() => {
     axiosReq.interceptors.request.use(
       async (config) => {
         try {
           await axiosReq.post("/dj-rest-auth/token/refresh/", null, {
-            withCredentials: true, // ✅ Send refresh token cookie
+            withCredentials: true,
           });
         } catch (err) {
           setCurrentUser((prevCurrentUser) => {
@@ -44,15 +45,16 @@ export const CurrentUserProvider = ({ children }) => {
       },
       (err) => Promise.reject(err)
     );
+
     axiosRes.interceptors.response.use(
       (response) => response,
       async (err) => {
         if (err.response?.status === 401) {
           try {
             await axiosReq.post("/dj-rest-auth/token/refresh/", null, {
-              withCredentials: true, // ✅ Again
+              withCredentials: true,
             });
-            return axiosRes(err.config);
+            return axiosRes(err.config); 
           } catch (refreshErr) {
             setCurrentUser((prevCurrentUser) => {
               if (prevCurrentUser) {
@@ -66,6 +68,7 @@ export const CurrentUserProvider = ({ children }) => {
       }
     );
   }, [history]);
+  
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <SetCurrentUserContext.Provider value={setCurrentUser}>
