@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import { axiosReq, axiosRes } from "../api/axiosDefaults";
 import { useHistory } from "react-router";
 
@@ -27,7 +26,7 @@ export const CurrentUserProvider = ({ children }) => {
     axiosReq.interceptors.request.use(
       async (config) => {
         try {
-          await axios.post("/dj-rest-auth/token/refresh/", null, {
+          await axiosReq.post("/dj-rest-auth/token/refresh/", null, {
             withCredentials: true, // ✅ Send refresh token cookie
           });
         } catch (err) {
@@ -47,7 +46,7 @@ export const CurrentUserProvider = ({ children }) => {
       async (err) => {
         if (err.response?.status === 401) {
           try {
-            await axios.post("/dj-rest-auth/token/refresh/", null, {
+            await axiosReq.post("/dj-rest-auth/token/refresh/", null, {
               withCredentials: true, // ✅ Again
             });
             return axios(err.config);
