@@ -10,18 +10,21 @@ export const CurrentUserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(undefined);
   const history = useHistory();
   useEffect(() => {
-    const handleMount = async () => {
-      try {
-        const { data } = await axiosRes.get("dj-rest-auth/user/", {
-          withCredentials: true, // ✅ Send cookie
-        });
-        setCurrentUser(data);
-      } catch (err) {
-        setCurrentUser(null); // Graceful fallback
-      }
-    };
-    handleMount();
-  }, []);
+  const handleMount = async () => {
+    try {
+      const { data } = await axiosRes.get("dj-rest-auth/user/", {
+        withCredentials: true,
+      });
+      console.log("✅ User loaded:", data);
+      setCurrentUser(data);
+    } catch (err) {
+      console.log("❌ Not logged in:", err?.response?.status);  // ADD THIS
+      setCurrentUser(null);
+    }
+  };
+  handleMount();
+}, []);
+
   useMemo(() => {
     axiosReq.interceptors.request.use(
       async (config) => {
