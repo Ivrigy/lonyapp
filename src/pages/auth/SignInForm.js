@@ -1,23 +1,13 @@
-import React, { useState} from "react";
-import axios from "axios";
-
-import {
-  Form,
-  Button,
-  Image,
-  Col,
-  Row,
-  Container,
-  Alert,
-} from "react-bootstrap";
-
+import React, { useState } from "react";
+import { Form, Alert, Button, Col, Row, Container, Image } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 
 import styles from "../../styles/SignInUpForm.module.css";
 import btnStyles from "../../styles/Button.module.css";
 import appStyles from "../../App.module.css";
-import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
 
+import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
+import { axiosReq } from "../../api/axiosDefaults";
 
 function SignInForm() {
   const setCurrentUser = useSetCurrentUser();
@@ -26,6 +16,7 @@ function SignInForm() {
     username: "",
     password: "",
   });
+
   const { username, password } = signInData;
 
   const [errors, setErrors] = useState({});
@@ -35,7 +26,10 @@ function SignInForm() {
     event.preventDefault();
 
     try {
-      const { data } = await axios.post("/dj-rest-auth/login/", signInData);
+      const { data } = await axiosReq.post(
+        "/dj-rest-auth/login/", 
+        signInData
+      );
       setCurrentUser(data.user);
       history.push("/");
     } catch (err) {
@@ -53,22 +47,22 @@ function SignInForm() {
   return (
     <Row className={styles.Row}>
       <Col className="my-auto p-0 p-md-2" md={6}>
-        <Container className={`${appStyles.Content} p-4 shadow-lg rounded `}>
+        <Container className={`${appStyles.Content} p-4 shadow-lg rounded`}>
           <h1 className={styles.Header}>sign in</h1>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="username">
-              <Form.Label className="d-none">username</Form.Label>
+              <Form.Label className="d-none">Username</Form.Label>
               <Form.Control
-                className={styles.Input}
                 type="text"
                 placeholder="username"
                 name="username"
+                className={styles.Input}
                 value={username}
                 onChange={handleChange}
               />
             </Form.Group>
             {errors.username?.map((message, idx) => (
-              <Alert variant="warning" key={idx}>
+              <Alert key={idx} variant="warning">
                 {message}
               </Alert>
             ))}
@@ -76,15 +70,15 @@ function SignInForm() {
             <Form.Group controlId="password">
               <Form.Label className="d-none">Password</Form.Label>
               <Form.Control
-                className={styles.Input}
                 type="password"
                 placeholder="password"
                 name="password"
+                className={styles.Input}
                 value={password}
                 onChange={handleChange}
               />
             </Form.Group>
-            {errors.password1?.map((message, idx) => (
+            {errors.password?.map((message, idx) => (
               <Alert key={idx} variant="warning">
                 {message}
               </Alert>
@@ -115,9 +109,7 @@ function SignInForm() {
       >
         <Image
           className={`${appStyles.FillerImage}`}
-          src={
-            "https://res.cloudinary.com/dhhna0y51/image/upload/v1748006933/lonysignin_nhzike.jpg"
-          }
+          src="https://res.cloudinary.com/dhhna0y51/image/upload/v1748006933/lonysignin_nhzike.jpg"
         />
       </Col>
     </Row>
