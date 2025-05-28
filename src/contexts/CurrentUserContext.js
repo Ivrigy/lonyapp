@@ -1,11 +1,6 @@
 import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+  createContext, useContext, useEffect, useMemo, useState,
 } from "react";
-import axios from "axios";
 import { axiosReq, axiosRes } from "../api/axiosDefaults";
 import { useHistory } from "react-router";
 
@@ -18,47 +13,37 @@ export const useSetCurrentUser = () => useContext(SetCurrentUserContext);
 export const CurrentUserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const history = useHistory();
-  
+
+  // 1) On mount, fetch “who am I?”
   useEffect(() => {
-    const handleMount = async () => {
+    (async () => {
       try {
-        const { data } = await axiosRes.get("dj-rest-auth/user/");
-        console.log("✅ [CurrentUserContext] user data:", data);
+        const { data } = await axiosRes.get("/dj-rest-auth/user/");
+        console.log("✅ user:", data);
         setCurrentUser(data);
       } catch (err) {
-        console.log("❌ [CurrentUserContext] could not load user:", err.response?.status, err.response?.data);
+        console.warn("❌ user fetch failed:", err.response?.status);
         setCurrentUser(null);
       }
-    };
-    handleMount();
+    })();
   }, []);
 
-  useMemo(() => { const reqInterceptor = axiosReq.interceptors.request.use(
-      async (config) => {
-        try {
-          await axios.post("dj-rest-auth/token/refresh/", null, { withCredentials: true });
-        } catch (err) {
-          setCurrentUser((prev) => {
-            if (prev) history.push("/signin");
-            return null;
-          });
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    const resInterceptor = axiosRes.interceptors.response.use(
-      (response) => response,
+  // 2) On any 401, do one refresh + retry
+  useMemo(() => {
+    const interceptor = axiosRes.interceptors.response.use(
+      resp => resp,
       async (error) => {
-        if (error.response?.status === 401) {
+        const orig = error.config;
+        if (error.response?.status === 401 && !orig._retry) {
+          orig._retry = true;
           try {
-            await axios.post("auth/token/refresh/", null, {
-              withCredentials: true,
-            });
-            return axiosReq(error.config);
-          } catch (err) {
-            setCurrentUser((prev) => {
+            // 🔥 Use axiosReq so baseURL+withCredentials apply
+            await axiosReq.post("/dj-rest-auth/token/refresh/");
+            // replay the original request
+            return axiosRes(orig);
+          } catch {
+            // refresh failed → log out
+            setCurrentUser(prev => {
               if (prev) history.push("/signin");
               return null;
             });
@@ -67,10 +52,8 @@ export const CurrentUserProvider = ({ children }) => {
         return Promise.reject(error);
       }
     );
-
-  return () => {
-      axiosReq.interceptors.request.eject(reqInterceptor);
-      axiosRes.interceptors.response.eject(resInterceptor);
+    return () => {
+      axiosRes.interceptors.response.eject(interceptor);
     };
   }, [history]);
 

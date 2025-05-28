@@ -1,10 +1,10 @@
+// src/api/axiosDefaults.js
 import axios from "axios";
 
-axios.defaults.baseURL = "https://lony-api-3e20bf0b1e37.herokuapp.com/";
-axios.defaults.withCredentials = true;
-// axios.defaults.headers.post["Content-Type"] = "multipart/form-data";
+const baseConfig = {
+  baseURL: "https://lony-api-3e20bf0b1e37.herokuapp.com/",
+  withCredentials: true,
+};
 
-export const axiosReq = axios.create();
-export const axiosRes = axios.create();
-
-
+export const axiosReq = axios.create(baseConfig);
+export const axiosRes = axios.create(baseConfig);
