@@ -1,23 +1,14 @@
 import React, { useState } from "react";
+import { Form, Button, Image, Col, Row, Container, Alert } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 
 import styles from "../../styles/SignInUpForm.module.css";
 import btnStyles from "../../styles/Button.module.css";
 import appStyles from "../../App.module.css";
 
-import {
-  Form,
-  Button,
-  Image,
-  Col,
-  Row,
-  Container,
-  Alert,
-} from "react-bootstrap";
-import axios from "axios";
+import { axiosReq } from "../../api/axiosDefaults";
 
-
-const SignUpForm = () => {
+function SignUpForm() {
   const [signUpData, setSignUpData] = useState({
     username: "",
     password1: "",
@@ -39,7 +30,10 @@ const SignUpForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axios.post("/dj-rest-auth/registration/", signUpData);
+      await axiosReq.post(
+        "/dj-rest-auth/registration/",
+        signUpData
+      );
       history.push("/signin");
     } catch (err) {
       setErrors(err.response?.data);
@@ -117,7 +111,7 @@ const SignUpForm = () => {
             ))}
           </Form>
         </Container>
-        
+
         <Container className={`mt-3 ${appStyles.Content} shadow-lg rounded`}>
           <Link className={styles.Link} to="/signin">
             Already have an account? <span>Sign in</span>
@@ -129,14 +123,12 @@ const SignUpForm = () => {
         className={`my-auto d-none d-md-block p-2 ${styles.SignUpCol}`}
       >
         <Image
-          className={`${appStyles.FillerImage} `}
-          src={
-            "https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
-          }
+          className={`${appStyles.FillerImage}`}
+          src="https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
         />
       </Col>
     </Row>
   );
-};
+}
 
 export default SignUpForm;
