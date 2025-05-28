@@ -1,5 +1,6 @@
+
 import React from "react";
-import { Navbar, Nav, Container, Spinner } from "react-bootstrap";
+import { Navbar, Nav, Container } from "react-bootstrap";
 import logo from "../assets/logo.png";
 import styles from "../styles/NavBar.module.css";
 import { NavLink } from "react-router-dom";
@@ -7,27 +8,17 @@ import { useCurrentUser } from "../contexts/CurrentUserContext";
 
 const NavBar = () => {
   const currentUser = useCurrentUser();
-  // 👀 Loading state (user is undefined)
-  if (currentUser === undefined) {
-    return (
-      <Navbar className={styles.NavBar} expand="md" fixed="top">
-        <Container fluid className="px-3 d-flex justify-content-end">
-          <Spinner animation="border" size="sm" role="status" className="me-2">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
-        </Container>
-      </Navbar>
-    );
-  }
-  // ✅ Authenticated
+
   const loggedInIcons = (
-    <>
-      <span className={`${styles.NavLink} text-white`}>
-        <i className="bi bi-person-circle"></i> {currentUser.username}
-      </span>
-    </>
+    <NavLink
+      to="/profile"
+      className={styles.NavLink}
+      activeClassName={styles.Active}
+    >
+      <i className="bi bi-person-circle"></i> {currentUser?.username}
+    </NavLink>
   );
-  // 👤 Guest
+
   const loggedOutIcons = (
     <>
       <NavLink
@@ -46,6 +37,7 @@ const NavBar = () => {
       </NavLink>
     </>
   );
+
   return (
     <Navbar className={styles.NavBar} expand="md" fixed="top">
       <Container fluid className="px-3">
@@ -63,7 +55,7 @@ const NavBar = () => {
               activeClassName={styles.Active}
               className="nav-link"
             >
-              <i className="bi bi-house-door"></i> Home
+              <i className="bi bi-house-door"></i> Home{" "}
             </NavLink>
             {currentUser ? loggedInIcons : loggedOutIcons}
           </Nav>
@@ -72,4 +64,5 @@ const NavBar = () => {
     </Navbar>
   );
 };
+
 export default NavBar;
