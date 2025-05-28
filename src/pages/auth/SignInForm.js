@@ -27,7 +27,7 @@ function SignInForm() {
 
     try {
       const { data } = await axiosReq.post(
-        "/dj-rest-auth/login/", 
+        "auth/login/",
         signInData
       );
       setCurrentUser(data.user);

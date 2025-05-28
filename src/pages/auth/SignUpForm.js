@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Form, Button, Image, Col, Row, Container, Alert } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Image,
+  Col,
+  Row,
+  Container,
+  Alert,
+} from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 
 import styles from "../../styles/SignInUpForm.module.css";
@@ -30,10 +38,7 @@ function SignUpForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axiosReq.post(
-        "/dj-rest-auth/registration/",
-        signUpData
-      );
+      await axiosReq.post("auth/registration/", signUpData);
       history.push("/signin");
     } catch (err) {
       setErrors(err.response?.data);
