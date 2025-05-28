@@ -22,7 +22,7 @@ export const CurrentUserProvider = ({ children }) => {
   useEffect(() => {
     const handleMount = async () => {
       try {
-        const { data } = await axiosRes.get("dj-rest-auth/user/");
+        const { data } = await axiosRes.get("auth/user/");
         console.log("✅ [CurrentUserContext] user data:", data);
         setCurrentUser(data);
       } catch (err) {
@@ -36,7 +36,7 @@ export const CurrentUserProvider = ({ children }) => {
   useMemo(() => { const reqInterceptor = axiosReq.interceptors.request.use(
       async (config) => {
         try {
-          await axios.post("/dj-rest-auth/token/refresh/", null, {
+          await axios.post("auth/token/refresh/", null, {
             withCredentials: true,
           });
         } catch (err) {
@@ -55,7 +55,7 @@ export const CurrentUserProvider = ({ children }) => {
       async (error) => {
         if (error.response?.status === 401) {
           try {
-            await axios.post("/dj-rest-auth/token/refresh/", null, {
+            await axios.post("auth/token/refresh/", null, {
               withCredentials: true,
             });
             return axiosReq(error.config);
