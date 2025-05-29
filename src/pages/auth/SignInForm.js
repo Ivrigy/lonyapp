@@ -8,8 +8,10 @@ import appStyles from "../../App.module.css";
 
 import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
 import { axiosReq, axiosRes} from "../../api/axiosDefaults";
+import { useSetTokenTimestamp } from "../../contexts/CurrentUserContext";
 
 function SignInForm() {
+  const setTokenTimestamp = useSetTokenTimestamp();
   const setCurrentUser = useSetCurrentUser();
   const history = useHistory();
 
@@ -38,14 +40,14 @@ function SignInForm() {
       "/dj-rest-auth/login/",
       signInData
     );
+
     setTokenTimestamp(data);
 
     const { data: userData } = await axiosRes.get(
       "/dj-rest-auth/user/"
     );
-
     setCurrentUser(userData);
-    history.goBack(); 
+    history.goBack();
   } catch (err) {
     setErrors(err.response?.data || {});
   }
