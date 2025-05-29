@@ -35,7 +35,7 @@ export const CurrentUserProvider = ({ children }) => {
       async (config) => {
         if (shouldRefreshToken()) {
           try {
-            await axios.post("/dj-rest-auth/token/refresh/");
+            await axiosReq.post("dj-rest-auth/token/refresh/");
           } catch (err) {
             setCurrentUser((prev) => {
               if (prev) history.push("/signin");
@@ -55,7 +55,7 @@ export const CurrentUserProvider = ({ children }) => {
         if (error.response?.status === 401 && !error.config._retry) {
           error.config._retry = true;
           try {
-            await axios.post("/dj-rest-auth/token/refresh/");
+            await axiosReq.post("dj-rest-auth/token/refresh/");
             return axios(error.config);
           } catch {
             setCurrentUser((prev) => {
@@ -79,7 +79,7 @@ export const CurrentUserProvider = ({ children }) => {
   useEffect(() => {
     const handleMount = async () => {
       try {
-        const { data } = await axiosRes.get("/dj-rest-auth/user/");
+        const { data } = await axiosRes.get("dj-rest-auth/user/");
         setCurrentUser(data);
       } catch {
         setCurrentUser(null);
