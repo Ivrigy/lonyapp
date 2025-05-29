@@ -7,10 +7,11 @@ import btnStyles from "../../styles/Button.module.css";
 import appStyles from "../../App.module.css";
 
 import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
-import { axiosReq } from "../../api/axiosDefaults";
+import { axiosReq, axiosRes} from "../../api/axiosDefaults";
 
 function SignInForm() {
   const setCurrentUser = useSetCurrentUser();
+  const history = useHistory();
 
   const [signInData, setSignInData] = useState({
     username: "",
@@ -21,26 +22,29 @@ function SignInForm() {
 
   const [errors, setErrors] = useState({});
 
-  const history = useHistory();
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      const { data } = await axiosReq.post("dj-rest-auth/login/", signInData);
-
-      setCurrentUser(data.user);
-      history.push("/");
-    } catch (err) {
-      setErrors(err.response?.data);
-    }
-  };
-
   const handleChange = (event) => {
     setSignInData({
       ...signInData,
       [event.target.name]: event.target.value,
     });
   };
+
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      await axiosReq.post("/dj-rest-auth/login/", signInData);
+      const { data: user } = await axiosRes.get("/dj-rest-auth/user/");
+
+      setCurrentUser(user);
+      history.push("/");
+    } catch (err) {
+      setErrors(err.response?.data || {});
+    }
+  };
+
+  
 
   return (
     <Row className={styles.Row}>
