@@ -1,5 +1,7 @@
 // src/contexts/CurrentUserContext.js
 
+// src/contexts/CurrentUserContext.js
+
 import React, {
   createContext,
   useContext,
@@ -7,7 +9,6 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import axios from "axios";
 import { axiosReq, axiosRes } from "../api/axiosDefaults";
 import { useHistory } from "react-router-dom";
 import {
@@ -29,19 +30,16 @@ export const CurrentUserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const history = useHistory();
 
-  // 1) Interceptors to refresh JWT when needed
   useMemo(() => {
     const reqInterceptor = axiosReq.interceptors.request.use(
       async (config) => {
         if (shouldRefreshToken()) {
           try {
             await axiosReq.post("dj-rest-auth/token/refresh/");
-          } catch (err) {
-            setCurrentUser((prev) => {
-              if (prev) history.push("/signin");
-              return null;
-            });
+          } catch {
+            setCurrentUser(null);
             removeTokenTimestamp();
+            history.push("/signin");
           }
         }
         return config;
@@ -52,17 +50,16 @@ export const CurrentUserProvider = ({ children }) => {
     const resInterceptor = axiosRes.interceptors.response.use(
       (response) => response,
       async (error) => {
-        if (error.response?.status === 401 && !error.config._retry) {
-          error.config._retry = true;
+        const origReq = error.config;  // <— define origReq here
+        if (error.response?.status === 401 && !origReq._retry) {
+          origReq._retry = true;
           try {
             await axiosReq.post("dj-rest-auth/token/refresh/");
-            return axios(error.config);
+            return axiosRes(origReq);  // <— replay against axiosRes
           } catch {
-            setCurrentUser((prev) => {
-              if (prev) history.push("/signin");
-              return null;
-            });
+            setCurrentUser(null);
             removeTokenTimestamp();
+            history.push("/signin");
           }
         }
         return Promise.reject(error);
@@ -75,7 +72,6 @@ export const CurrentUserProvider = ({ children }) => {
     };
   }, [history]);
 
-  // 2) On mount, load current user
   useEffect(() => {
     const handleMount = async () => {
       try {
