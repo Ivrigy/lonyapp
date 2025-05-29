@@ -31,18 +31,25 @@ function SignInForm() {
 
   
   const handleSubmit = async (event) => {
-    event.preventDefault();
+  event.preventDefault();
 
-    try {
-      await axiosReq.post("/dj-rest-auth/login/", signInData);
-      const { data: user } = await axiosRes.get("/dj-rest-auth/user/");
+  try {
+    const { data } = await axiosReq.post(
+      "/dj-rest-auth/login/",
+      signInData
+    );
+    setTokenTimestamp(data);
 
-      setCurrentUser(user);
-      history.push("/");
-    } catch (err) {
-      setErrors(err.response?.data || {});
-    }
-  };
+    const { data: userData } = await axiosRes.get(
+      "/dj-rest-auth/user/"
+    );
+
+    setCurrentUser(userData);
+    history.goBack(); 
+  } catch (err) {
+    setErrors(err.response?.data || {});
+  }
+};
 
   
 
