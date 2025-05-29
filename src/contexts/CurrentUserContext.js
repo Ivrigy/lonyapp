@@ -1,66 +1,99 @@
-import React, {
-  createContext, useContext, useEffect, useMemo, useState,
-} from "react";
-import { axiosReq, axiosRes } from "../api/axiosDefaults";
-import { useHistory } from "react-router";
+// src/contexts/CurrentUserContext.js
 
-export const CurrentUserContext = createContext();
-export const SetCurrentUserContext = createContext();
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
+import axios from "axios";
+import { axiosReq, axiosRes } from "../api/axiosDefaults";
+import { useHistory } from "react-router-dom";
+import {
+  removeTokenTimestamp,
+  shouldRefreshToken,
+  setTokenTimestamp,
+} from "../utils/utils";
+
+const CurrentUserContext = createContext();
+const SetCurrentUserContext = createContext();
+const SetTokenTimestampContext = createContext();
 
 export const useCurrentUser = () => useContext(CurrentUserContext);
 export const useSetCurrentUser = () => useContext(SetCurrentUserContext);
+export const useSetTokenTimestamp = () =>
+  useContext(SetTokenTimestampContext);
 
 export const CurrentUserProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const history = useHistory();
 
-  // 1) On mount, fetch “who am I?”
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await axiosRes.get("/dj-rest-auth/user/");
-        console.log("✅ user:", data);
-        setCurrentUser(data);
-      } catch (err) {
-        console.warn("❌ user fetch failed:", err.response?.status);
-        setCurrentUser(null);
-      }
-    })();
-  }, []);
-
-  // 2) On any 401, do one refresh + retry
+  // 1) Interceptors to refresh JWT when needed
   useMemo(() => {
-    const interceptor = axiosRes.interceptors.response.use(
-      resp => resp,
-      async (error) => {
-        const orig = error.config;
-        if (error.response?.status === 401 && !orig._retry) {
-          orig._retry = true;
+    const reqInterceptor = axiosReq.interceptors.request.use(
+      async (config) => {
+        if (shouldRefreshToken()) {
           try {
-            // 🔥 Use axiosReq so baseURL+withCredentials apply
-            await axiosReq.post("/dj-rest-auth/token/refresh/");
-            // replay the original request
-            return axiosRes(orig);
-          } catch {
-            // refresh failed → log out
-            setCurrentUser(prev => {
+            await axios.post("/dj-rest-auth/token/refresh/");
+          } catch (err) {
+            setCurrentUser((prev) => {
               if (prev) history.push("/signin");
               return null;
             });
+            removeTokenTimestamp();
+          }
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    const resInterceptor = axiosRes.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error.response?.status === 401 && !error.config._retry) {
+          error.config._retry = true;
+          try {
+            await axios.post("/dj-rest-auth/token/refresh/");
+            return axios(error.config);
+          } catch {
+            setCurrentUser((prev) => {
+              if (prev) history.push("/signin");
+              return null;
+            });
+            removeTokenTimestamp();
           }
         }
         return Promise.reject(error);
       }
     );
+
     return () => {
-      axiosRes.interceptors.response.eject(interceptor);
+      axiosReq.interceptors.request.eject(reqInterceptor);
+      axiosRes.interceptors.response.eject(resInterceptor);
     };
   }, [history]);
+
+  // 2) On mount, load current user
+  useEffect(() => {
+    const handleMount = async () => {
+      try {
+        const { data } = await axiosRes.get("/dj-rest-auth/user/");
+        setCurrentUser(data);
+      } catch {
+        setCurrentUser(null);
+      }
+    };
+    handleMount();
+  }, []);
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <SetCurrentUserContext.Provider value={setCurrentUser}>
-        {children}
+        <SetTokenTimestampContext.Provider value={setTokenTimestamp}>
+          {children}
+        </SetTokenTimestampContext.Provider>
       </SetCurrentUserContext.Provider>
     </CurrentUserContext.Provider>
   );
