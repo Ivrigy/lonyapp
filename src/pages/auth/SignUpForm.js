@@ -14,7 +14,9 @@ import styles from "../../styles/SignInUpForm.module.css";
 import btnStyles from "../../styles/Button.module.css";
 import appStyles from "../../App.module.css";
 
-import { axiosReq } from "../../api/axiosDefaults";
+import api from "../../api/axiosDefaults";  
+import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
+
 
 function SignUpForm() {
   const [signUpData, setSignUpData] = useState({
@@ -25,7 +27,7 @@ function SignUpForm() {
   const { username, password1, password2 } = signUpData;
 
   const [errors, setErrors] = useState({});
-
+  const setCurrentUser = useSetCurrentUser(); 
   const history = useHistory();
 
   const handleChange = (event) => {
@@ -38,10 +40,22 @@ function SignUpForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await axiosReq.post("dj-rest-auth/registration/", signUpData);
-      history.push("/signin");
+      await api.post("/dj-rest-auth/registration/", signUpData);
+      // add autologin
+      const { data: loginData } = await api.post("/dj-rest-auth/login/", {
+        username,
+        password: password1,
+      });
+      localStorage.setItem("access_token", loginData.access);
+      localStorage.setItem("refresh_token", loginData.refresh);
+
+      // fetch current user
+      const { data: userData } = await api.get("/dj-rest-auth/user/");
+      setCurrentUser(userData);
+
+      history.push("/");
     } catch (err) {
-      setErrors(err.response?.data);
+      setErrors(err.response?.data || {});
     }
   };
 
