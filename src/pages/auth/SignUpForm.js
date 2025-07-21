@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+
+import styles from "../../styles/SignInUpForm.module.css";
+import btnStyles from "../../styles/Button.module.css";
+import appStyles from "../../App.module.css";
+
 import {
   Form,
   Button,
@@ -8,17 +14,11 @@ import {
   Container,
   Alert,
 } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
-
-import styles from "../../styles/SignInUpForm.module.css";
-import btnStyles from "../../styles/Button.module.css";
-import appStyles from "../../App.module.css";
-
-import api from "../../api/axiosDefaults";  
-import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
+import axios from "axios";
+// import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
 
 
-function SignUpForm() {
+const SignUpForm = () => {
   const [signUpData, setSignUpData] = useState({
     username: "",
     password1: "",
@@ -27,33 +27,21 @@ function SignUpForm() {
   const { username, password1, password2 } = signUpData;
 
   const [errors, setErrors] = useState({});
-  const setCurrentUser = useSetCurrentUser(); 
+
   const history = useHistory();
 
-  const handleChange = (event) => {
+  const handleChange = (e) => {
     setSignUpData({
       ...signUpData,
-      [event.target.name]: event.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await api.post("/dj-rest-auth/registration/", signUpData);
-      // add autologin
-      const { data: loginData } = await api.post("/dj-rest-auth/login/", {
-        username,
-        password: password1,
-      });
-      localStorage.setItem("access_token", loginData.access);
-      localStorage.setItem("refresh_token", loginData.refresh);
-
-      // fetch current user
-      const { data: userData } = await api.get("/dj-rest-auth/user/");
-      setCurrentUser(userData);
-
-      history.push("/");
+      await axios.post("/dj-rest-auth/registration/", signUpData);
+      history.push("/signin");
     } catch (err) {
       setErrors(err.response?.data || {});
     }
@@ -77,14 +65,15 @@ function SignUpForm() {
                 onChange={handleChange}
               />
             </Form.Group>
-            {errors.username?.map((message, idx) => (
+            {errors.username?.map((msg, idx) => (
               <Alert variant="warning" key={idx}>
-                {message}
+                {msg}
               </Alert>
             ))}
 
-            <Form.Group controlId="password1">
-              <Form.Label className="d-none">Password</Form.Label>
+
+             <Form.Group controlId="password1">
+              <Form.Label className="d-none">password</Form.Label>
               <Form.Control
                 className={styles.Input}
                 type="password"
@@ -94,14 +83,14 @@ function SignUpForm() {
                 onChange={handleChange}
               />
             </Form.Group>
-            {errors.password1?.map((message, idx) => (
-              <Alert key={idx} variant="warning">
-                {message}
+            {errors.password1?.map((msg, idx) => (
+              <Alert variant="warning" key={idx}>
+                {msg}
               </Alert>
             ))}
 
             <Form.Group controlId="password2">
-              <Form.Label className="d-none">Confirm password</Form.Label>
+              <Form.Label className="d-none">confirm password</Form.Label>
               <Form.Control
                 className={styles.Input}
                 type="password"
@@ -111,21 +100,23 @@ function SignUpForm() {
                 onChange={handleChange}
               />
             </Form.Group>
-            {errors.password2?.map((message, idx) => (
-              <Alert key={idx} variant="warning">
-                {message}
+            {errors.password2?.map((msg, idx) => (
+              <Alert variant="warning" key={idx}>
+                {msg}
               </Alert>
             ))}
 
-            <Button
+           <Button
               className={`${btnStyles.Button} ${btnStyles.Wide} ${btnStyles.Bright}`}
               type="submit"
             >
               Sign up
             </Button>
-            {errors.non_field_errors?.map((message, idx) => (
-              <Alert key={idx} variant="warning" className="mt-3">
-                {message}
+
+            {/* Non-field errors */}
+            {errors.non_field_errors?.map((msg, idx) => (
+              <Alert variant="warning" className="mt-3" key={idx}>
+                {msg}
               </Alert>
             ))}
           </Form>
@@ -137,17 +128,15 @@ function SignUpForm() {
           </Link>
         </Container>
       </Col>
-      <Col
-        md={6}
-        className={`my-auto d-none d-md-block p-2 ${styles.SignUpCol}`}
-      >
+      
+      <Col md={6} className={`my-auto d-none d-md-block p-2 ${styles.SignUpCol}`}>
         <Image
-          className={`${appStyles.FillerImage}`}
+          className={appStyles.FillerImage}
           src="https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
         />
       </Col>
     </Row>
   );
-}
+};
 
 export default SignUpForm;
