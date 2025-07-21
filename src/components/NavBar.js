@@ -69,7 +69,7 @@ const NavBar = () => {
         to="/"
         onClick={handleSignOut}
       >
-        <i className="bi bi-box-arrow-right"></i> Sign out
+        <i className="bi bi-arrow-bar-right"></i> Sign out
       </NavLink>
       <NavLink
         className={styles.NavLink}
