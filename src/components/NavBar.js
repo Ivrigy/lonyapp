@@ -31,6 +31,16 @@ const NavBar = () => {
     </NavLink>
   );
 
+  const addEventIcon = (
+    <NavLink
+      className={styles.NavLink}
+      activeClassName={styles.Active}
+      to="/event/create"
+    >
+      <i className="bi bi-calendar-plus"></i> Add event
+    </NavLink>
+  );
+
   const loggedInIcons = (
     <>
       <NavLink
@@ -39,6 +49,13 @@ const NavBar = () => {
         to="/feed"
       >
         <i className="bi bi-justify"></i> Feed
+      </NavLink>
+      <NavLink
+        className={styles.NavLink}
+        activeClassName={styles.Active}
+        to="/events"
+      >
+        <i className="bi bi-calendar-week"></i> Events
       </NavLink>
       <NavLink
         className={styles.NavLink}
@@ -92,6 +109,7 @@ const NavBar = () => {
         </NavLink>
 
         {currentUser && addPostIcon}
+        {currentUser && addEventIcon}
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
