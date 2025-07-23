@@ -103,11 +103,11 @@ const NavBar = () => {
   );
 
   return (
-    <Navbar expanded={expanded} className={styles.NavBar} expand="md" fixed="top">
+    <Navbar expanded={expanded} className={styles.NavBar} expand="lg" fixed="top">
       <Container>
         <NavLink to="/">
           <Navbar.Brand>
-            <img src={logo} alt="logo" height="45" />
+            <img src={logo} alt="logo" className={styles.BrandImg} />
           </Navbar.Brand>
         </NavLink>
 
@@ -115,8 +115,8 @@ const NavBar = () => {
         {currentUser && addEventIcon}
 
         <Navbar.Toggle ref={ref}
-        onClick={() => setExpanded(!expanded)} 
-        aria-controls="basic-navbar-nav" />
+          onClick={() => setExpanded(!expanded)}
+          aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto text-left">
             <NavLink

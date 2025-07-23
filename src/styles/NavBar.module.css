@@ -5,11 +5,58 @@
 }
 
 .NavLink {
+  display: inline-flex;
+  align-items: center;
   padding: 5px;
-   margin-right: 1rem;  
+  margin-right: 0,25rem;  
+  white-space: nowrap; 
 }
 
+.NavLink i {
+  font-size: 1.3rem;   
+  line-height: 1;
+  margin-right: 0.25rem;
+}
+
+.NavContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 1.3rem;
+}
 
 .Active i {
   color: #FF781F;
+}
+
+.BrandImg {
+  width: auto;
+  max-width: 140px;
+  height: 35px;
+}
+
+
+@media (max-width: 576px) {
+  .BrandImg {
+    max-width: 80px;
+    max-height: 20px;
+  }
+  .NavContainer {
+    gap: 0.25rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .NavBar :global(.navbar-collapse) {
+    margin-left: auto;
+    flex-basis: auto;
+    flex-grow: 0;
+  }
+  .NavContainer {
+    gap: 0.5rem;
+  }
+  .NavContainer :global(.navbar-toggler) {
+    margin-left: auto;
+    align-self: center;
+  }
 }
