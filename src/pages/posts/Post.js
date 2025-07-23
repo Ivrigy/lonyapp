@@ -5,7 +5,6 @@ import styles from "../../styles/Post.module.css";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 import Avatar from "../../components/Avatar";
 
-
 const BACKEND = process.env.REACT_APP_BACKEND_URL;
 
 const Post = (props) => {
@@ -19,30 +18,34 @@ const Post = (props) => {
     like_id,
     title,
     content,
-    image,         
+    image,
     updated_at,
     postPage,
   } = props;
 
-  const currentUser = useCurrentUser();
-  const is_owner   = currentUser?.username === owner;
-
-  // build the final src only once:
-  let finalImage = null;
+  let finalImageSrc = null;
   if (image) {
     if (image.startsWith("http")) {
-      finalImage = encodeURI(image);
+      finalImageSrc = image;
     } else {
-      finalImage = encodeURI(`${BACKEND}${image}`);
+      finalImageSrc = `${BACKEND}${image}`;
     }
-    console.log("🔍 finalImage src:", finalImage);
   }
+
+  const currentUser = useCurrentUser();
+  const is_owner = currentUser?.username === owner;
 
   return (
     <Card className={styles.Post}>
       <Card.Body>
-        <Stack direction="horizontal" className="align-items-center justify-content-between">
-          <Link to={`/profiles/${profile_id}`} className="d-flex align-items-center text-decoration-none">
+        <Stack
+          direction="horizontal"
+          className="align-items-center justify-content-between"
+        >
+          <Link
+            to={`/profiles/${profile_id}`}
+            className="d-flex align-items-center text-decoration-none"
+          >
             <Avatar src={profile_image} height={55} />
             <span className="ms-2">{owner}</span>
           </Link>
@@ -53,19 +56,22 @@ const Post = (props) => {
         </Stack>
       </Card.Body>
 
-      {finalImage && (
+      {finalImageSrc && (
         <Link to={`/posts/${id}`}>
-          <Card.Img src={finalImage} alt={title} />
+          <Card.Img src={finalImageSrc} alt={title} />
         </Link>
       )}
 
       <Card.Body>
-        {title   && <Card.Title className="text-center">{title}</Card.Title>}
+        {title && <Card.Title className="text-center">{title}</Card.Title>}
         {content && <Card.Text>{content}</Card.Text>}
 
         <div className={styles.PostBar}>
           {is_owner ? (
-            <OverlayTrigger placement="top" overlay={<Tooltip>You can't like your own post!</Tooltip>}>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>You can't like your own post!</Tooltip>}
+            >
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           ) : like_id ? (
@@ -77,10 +83,14 @@ const Post = (props) => {
               <i className="bi bi-suit-heart" />
             </span>
           ) : (
-            <OverlayTrigger placement="top" overlay={<Tooltip>Log in to like posts!</Tooltip>}>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Log in to like posts!</Tooltip>}
+            >
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           )}
+
           <span className="ms-1">{likes_count}</span>
 
           <Link to={`/posts/${id}`} className="ms-3">
