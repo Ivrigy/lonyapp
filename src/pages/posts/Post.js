@@ -4,6 +4,7 @@ import { Card, Stack, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 import Avatar from "../../components/Avatar";
 import styles from "../../styles/Post.module.css";
+import { axiosRes } from "../../api/axiosDefaults";
 
 const BACKEND = process.env.REACT_APP_BACKEND_URL;
 
@@ -36,6 +37,38 @@ const Post = (props) => {
 
   const currentUser = useCurrentUser();
   const is_owner = currentUser?.username === owner;
+
+  const handleLike = async () => {
+    try {
+      const { data } = await axiosRes.post("/likes/", { post: id });
+      setPosts((prevPosts) => ({
+        ...prevPosts,
+        results: prevPosts.results.map((post) => {
+          return post.id === id
+            ? { ...post, likes_count: post.likes_count + 1, like_id: data.id }
+            : post;
+        }),
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
+  const handleUnlike = async () => {
+    try {
+      await axiosRes.delete(`/likes/${like_id}/`);
+      setPosts((prevPosts) => ({
+        ...prevPosts,
+        results: prevPosts.results.map((post) => {
+          return post.id === id
+            ? { ...post, likes_count: post.likes_count - 1, like_id: null }
+            : post;
+        }),
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Card className={styles.Post}>
@@ -95,11 +128,11 @@ const Post = (props) => {
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           ) : like_id ? (
-            <span onClick={() => {/* unlike handler */}}>
+            <span  onClick={handleUnlike}>
               <i className="bi bi-suit-heart-fill" />
             </span>
           ) : currentUser ? (
-            <span onClick={() => {/* like handler */}}>
+            <span onClick={handleLike}>
               <i className="bi bi-suit-heart" />
             </span>
           ) : (
