@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, Stack, OverlayTrigger, Tooltip } from "react-bootstrap";
-import styles from "../../styles/Post.module.css";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 import Avatar from "../../components/Avatar";
+import styles from "../../styles/Post.module.css";
 
 const BACKEND = process.env.REACT_APP_BACKEND_URL;
 
@@ -21,15 +21,17 @@ const Post = (props) => {
     image,
     updated_at,
     postPage,
+    setPosts,
+    handleEdit,
+    handleDelete,
   } = props;
 
+  // figure out the real image URL
   let finalImageSrc = null;
   if (image) {
-    if (image.startsWith("http")) {
-      finalImageSrc = image;
-    } else {
-      finalImageSrc = `${BACKEND}${image}`;
-    }
+    finalImageSrc = image.startsWith("http")
+      ? image
+      : `${BACKEND}${image}`;
   }
 
   const currentUser = useCurrentUser();
@@ -49,9 +51,27 @@ const Post = (props) => {
             <Avatar src={profile_image} height={55} />
             <span className="ms-2">{owner}</span>
           </Link>
+
           <div className="d-flex align-items-center">
             <small className="text-muted">{updated_at}</small>
-            {is_owner && postPage && <span className="ms-2">…</span>}
+            {is_owner && postPage && (
+              <>
+                <span
+                  onClick={handleEdit}
+                  className="ms-3 text-primary"
+                  style={{ cursor: "pointer" }}
+                >
+                  Edit
+                </span>
+                <span
+                  onClick={handleDelete}
+                  className="ms-3 text-danger"
+                  style={{ cursor: "pointer" }}
+                >
+                  Delete
+                </span>
+              </>
+            )}
           </div>
         </Stack>
       </Card.Body>
@@ -75,11 +95,11 @@ const Post = (props) => {
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           ) : like_id ? (
-            <span onClick={() => { /* unlike */ }}>
+            <span onClick={() => {/* unlike handler */}}>
               <i className="bi bi-suit-heart-fill" />
             </span>
           ) : currentUser ? (
-            <span onClick={() => { /* like */ }}>
+            <span onClick={() => {/* like handler */}}>
               <i className="bi bi-suit-heart" />
             </span>
           ) : (
@@ -90,7 +110,6 @@ const Post = (props) => {
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           )}
-
           <span className="ms-1">{likes_count}</span>
 
           <Link to={`/posts/${id}`} className="ms-3">
