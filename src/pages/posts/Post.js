@@ -1,12 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import styles from "../../styles/Post.module.css";
+import { Link, useHistory } from "react-router-dom";
 import { Card, Stack, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 import Avatar from "../../components/Avatar";
-import styles from "../../styles/Post.module.css";
 import { axiosRes } from "../../api/axiosDefaults";
-
-const BACKEND = process.env.REACT_APP_BACKEND_URL;
+import { MoreDropdown } from "../../components/MoreDropdown";
 
 const Post = (props) => {
   const {
@@ -23,47 +22,51 @@ const Post = (props) => {
     updated_at,
     postPage,
     setPosts,
-    handleEdit,
-    handleDelete,
   } = props;
-
-  // figure out the real image URL
-  let finalImageSrc = null;
-  if (image) {
-    finalImageSrc = image.startsWith("http")
-      ? image
-      : `${BACKEND}${image}`;
-  }
 
   const currentUser = useCurrentUser();
   const is_owner = currentUser?.username === owner;
+  const history = useHistory();
+
+  const handleEdit = () => {
+    history.push(`/posts/${id}/edit`);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axiosRes.delete(`/posts/${id}/`);
+      history.goBack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleLike = async () => {
     try {
       const { data } = await axiosRes.post("/likes/", { post: id });
-      setPosts((prevPosts) => ({
-        ...prevPosts,
-        results: prevPosts.results.map((post) => {
-          return post.id === id
-            ? { ...post, likes_count: post.likes_count + 1, like_id: data.id }
-            : post;
-        }),
+      setPosts(prev => ({
+        ...prev,
+        results: prev.results.map(p =>
+          p.id === id
+            ? { ...p, likes_count: p.likes_count + 1, like_id: data.id }
+            : p
+        ),
       }));
     } catch (err) {
       console.log(err);
     }
   };
-  
+
   const handleUnlike = async () => {
     try {
       await axiosRes.delete(`/likes/${like_id}/`);
-      setPosts((prevPosts) => ({
-        ...prevPosts,
-        results: prevPosts.results.map((post) => {
-          return post.id === id
-            ? { ...post, likes_count: post.likes_count - 1, like_id: null }
-            : post;
-        }),
+      setPosts(prev => ({
+        ...prev,
+        results: prev.results.map(p =>
+          p.id === id
+            ? { ...p, likes_count: p.likes_count - 1, like_id: null }
+            : p
+        ),
       }));
     } catch (err) {
       console.log(err);
@@ -84,36 +87,21 @@ const Post = (props) => {
             <Avatar src={profile_image} height={55} />
             <span className="ms-2">{owner}</span>
           </Link>
-
           <div className="d-flex align-items-center">
-            <small className="text-muted">{updated_at}</small>
+            <span>{updated_at}</span>
             {is_owner && postPage && (
-              <>
-                <span
-                  onClick={handleEdit}
-                  className="ms-3 text-primary"
-                  style={{ cursor: "pointer" }}
-                >
-                  Edit
-                </span>
-                <span
-                  onClick={handleDelete}
-                  className="ms-3 text-danger"
-                  style={{ cursor: "pointer" }}
-                >
-                  Delete
-                </span>
-              </>
+              <MoreDropdown
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+              />
             )}
           </div>
         </Stack>
       </Card.Body>
 
-      {finalImageSrc && (
-        <Link to={`/posts/${id}`}>
-          <Card.Img src={finalImageSrc} alt={title} />
-        </Link>
-      )}
+      <Link to={`/posts/${id}`}>
+        <Card.Img src={image} alt={title} />
+      </Link>
 
       <Card.Body>
         {title && <Card.Title className="text-center">{title}</Card.Title>}
@@ -128,7 +116,7 @@ const Post = (props) => {
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           ) : like_id ? (
-            <span  onClick={handleUnlike}>
+            <span onClick={handleUnlike}>
               <i className="bi bi-suit-heart-fill" />
             </span>
           ) : currentUser ? (
