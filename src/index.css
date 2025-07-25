@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+:root {
+  --bs-btn-disabled-bg: #909091;
+  --bs-btn-disabled-border-color: #909091;
+  --bs-btn-disabled-color: #fff; 
+}
+
+
+.btn:disabled,
+.btn.disabled {
+  background-color: #909091 !important;
+  border-color:    #909091 !important;
+  color:           #fff    !important;
+}
