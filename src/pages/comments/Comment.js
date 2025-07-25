@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Stack from "react-bootstrap/Stack";
 import Avatar from "../../components/Avatar";
@@ -6,6 +6,7 @@ import { MoreDropdown } from "../../components/MoreDropdown";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 import { axiosRes } from "../../api/axiosDefaults";
 import styles from "../../styles/Comment.module.css";
+import CommentEditForm from "./CommentEditForm";
 
 const Comment = ({
   profile_id,
@@ -19,6 +20,8 @@ const Comment = ({
 }) => {
   const currentUser = useCurrentUser();
   const is_owner = currentUser?.username === owner;
+
+  const [showEditForm, setShowEditForm] = useState(false);
 
   const handleDelete = async () => {
     try {
@@ -54,14 +57,26 @@ const Comment = ({
               <span className={`${styles.Owner} me-2`}>{owner}</span>
               <small className={styles.Date}>{updated_at}</small>
             </div>
-            {is_owner && (
+            {is_owner && !showEditForm && (
               <MoreDropdown
-                handleEdit={() => {}}
+                handleEdit={() => setShowEditForm(true)}
                 handleDelete={handleDelete}
               />
             )}
           </div>
-          <p className="mb-0">{content}</p>
+
+          {showEditForm ? (
+            <CommentEditForm
+              id={id}
+              content={content}
+              setShowEditForm={setShowEditForm}
+              setComments={setComments}
+              profile_id={profile_id}
+              profileImage={profile_image}
+            />
+          ) : (
+            <p className="mb-0">{content}</p>
+          )}
         </Stack>
       </Stack>
     </div>
