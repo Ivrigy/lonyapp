@@ -13,12 +13,14 @@ import Comment from "../comments/Comment";
 import CommentCreateForm from "../comments/CommentCreateForm";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 
+
 function PostPage() {
   const { id } = useParams();
   const [post, setPost] = useState({ results: [] });
-  const [comments, setComments] = useState({ results: [] });
+
   const currentUser = useCurrentUser();
-  const profileImage = currentUser?.profile_image;
+  const profile_image = currentUser?.profile_image;
+  const [comments, setComments] = useState({ results: [] });
 
   useEffect(() => {
     const handleMount = async () => {
@@ -46,7 +48,7 @@ function PostPage() {
           {currentUser ? (
             <CommentCreateForm
               profile_id={currentUser.profile_id}
-              profileImage={profileImage}
+              profileImage={profile_image}
               post={id}
               setPost={setPost}
               setComments={setComments}
@@ -56,7 +58,12 @@ function PostPage() {
           ) : null}
           {comments.results.length ? (
             comments.results.map((comment) => (
-              <Comment key={comment.id} {...comment} />
+              <Comment
+                key={comment.id}
+                {...comment}
+                setPost={setPost}
+                setComments={setComments}
+              />
             ))
           ) : currentUser ? (
             <span>Be the first to share your thoughts!</span>
