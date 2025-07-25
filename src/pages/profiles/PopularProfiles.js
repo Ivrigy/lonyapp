@@ -4,6 +4,7 @@ import { axiosReq } from "../../api/axiosDefaults";
 import appStyles from "../../App.module.css";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 import Asset from "../../components/Asset";
+import Profile from "./Profile";
 
 const PopularProfiles = ({ mobile }) => {
   const [profileData, setProfileData] = useState({
@@ -39,21 +40,17 @@ const PopularProfiles = ({ mobile }) => {
     >
       {popularProfiles.results.length ? (
         <>
-          <p className="fw-bold text-secondary mb-3">Most followed profiles</p>
+          <p className="mb-3">Most followed profiles</p>
           {mobile ? (
             <div className="d-flex justify-content-around flex-wrap">
               {popularProfiles.results.slice(0, 4).map((profile) => (
-                <div key={profile.id} className="text-center">
-                  <p className="mb-1">{profile.owner}</p>
-                </div>
+                <Profile key={profile.id} profile={profile} mobile />
               ))}
             </div>
           ) : (
             <div className="d-grid gap-2">
               {popularProfiles.results.map((profile) => (
-                <div key={profile.id}>
-                  <p className="mb-1">{profile.owner}</p>
-                </div>
+                <Profile key={profile.id} profile={profile} />
               ))}
             </div>
           )}
