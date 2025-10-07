@@ -3,32 +3,24 @@ import { Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
-
 import styles from "../../styles/CommentCreateEditForm.module.css";
+import btnStyles from "../../styles/Button.module.css";
 import Avatar from "../../components/Avatar";
 import { axiosRes } from "../../api/axiosDefaults";
 
 function CommentCreateForm({ post, setPost, setComments, profileImage, profile_id }) {
   const [content, setContent] = useState("");
 
-  const handleChange = (e) => {
-    setContent(e.target.value);
-  };
+  const handleChange = (e) => setContent(e.target.value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data } = await axiosRes.post("/comments/", { content, post });
-      setComments(prev => ({
-        ...prev,
-        results: [data, ...prev.results],
-      }));
-      setPost(prev => ({
+      setComments((prev) => ({ ...prev, results: [data, ...prev.results] }));
+      setPost((prev) => ({
         results: [
-          {
-            ...prev.results[0],
-            comments_count: prev.results[0].comments_count + 1,
-          },
+          { ...prev.results[0], comments_count: prev.results[0].comments_count + 1 },
         ],
       }));
       setContent("");
@@ -56,7 +48,7 @@ function CommentCreateForm({ post, setPost, setComments, profileImage, profile_i
       </Form.Group>
       <div className="d-flex justify-content-end mt-2">
         <Button
-          className={styles.Button}
+          className={`${btnStyles.Button} ${btnStyles.AccentFollow}`}
           disabled={!content.trim()}
           type="submit"
         >
