@@ -15,8 +15,11 @@ import Asset from "../../components/Asset";
 import styles from "../../styles/PostCreateEditForm.module.css";
 import appStyles from "../../App.module.css";
 import btnStyles from "../../styles/Button.module.css";
+import { useRedirect } from "../../hooks/useRedirect";
 
 function PostCreateForm() {
+  useRedirect("loggedOut");
+
   const [errors, setErrors] = useState({});
   const [postData, setPostData] = useState({
     title: "",
@@ -52,19 +55,17 @@ function PostCreateForm() {
     formData.append("title", title);
     formData.append("content", content);
     formData.append("image", imageInput.current.files[0]);
-
     formData.append("image_filter", "normal");
 
-     try {
-    const { data } = await axiosReq.post("/posts/", formData);
-    history.push(`/posts/${data.id}`);
-  } catch (err) {
-    console.log("Create error:", err.response?.data);
-    if (err.response?.status !== 401) {
-      setErrors(err.response?.data);
+    try {
+      const { data } = await axiosReq.post("/posts/", formData);
+      history.push(`/posts/${data.id}`);
+    } catch (err) {
+      if (err.response?.status !== 401) {
+        setErrors(err.response?.data);
+      }
     }
-  }
-};
+  };
 
   const textFields = (
     <div className="text-center">
@@ -127,11 +128,7 @@ function PostCreateForm() {
               {image ? (
                 <>
                   <figure>
-                    <Image
-                      className={appStyles.Image}
-                      src={image}
-                      rounded
-                    />
+                    <Image className={appStyles.Image} src={image} rounded />
                   </figure>
                   <div>
                     <Form.Label

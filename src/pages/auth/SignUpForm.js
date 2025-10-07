@@ -15,10 +15,11 @@ import {
   Alert,
 } from "react-bootstrap";
 import axios from "axios";
-// import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
-
+import { useRedirect } from "../../hooks/useRedirect";
 
 const SignUpForm = () => {
+  useRedirect("loggedIn");
+
   const [signUpData, setSignUpData] = useState({
     username: "",
     password1: "",
@@ -71,8 +72,7 @@ const SignUpForm = () => {
               </Alert>
             ))}
 
-
-             <Form.Group controlId="password1">
+            <Form.Group controlId="password1">
               <Form.Label className="d-none">password</Form.Label>
               <Form.Control
                 className={styles.Input}
@@ -106,14 +106,13 @@ const SignUpForm = () => {
               </Alert>
             ))}
 
-           <Button
+            <Button
               className={`${btnStyles.Button} ${btnStyles.Wide} ${btnStyles.Bright}`}
               type="submit"
             >
               Sign up
             </Button>
 
-            {/* Non-field errors */}
             {errors.non_field_errors?.map((msg, idx) => (
               <Alert variant="warning" className="mt-3" key={idx}>
                 {msg}
@@ -128,7 +127,7 @@ const SignUpForm = () => {
           </Link>
         </Container>
       </Col>
-      
+
       <Col md={6} className={`my-auto d-none d-md-block p-2 ${styles.SignUpCol}`}>
         <Image
           className={appStyles.FillerImage}
