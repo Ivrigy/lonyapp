@@ -17,7 +17,11 @@ const Profile = (props) => {
   const { handleFollow } = useSetProfileData();
 
   return (
-    <div className={`my-3 d-flex align-items-center ${mobile ? "flex-column" : ""}`}>
+    <div
+      className={`my-3 d-flex align-items-center ${
+        mobile ? "flex-column" : ""
+      }`}
+    >
       <div>
         <Link className="align-self-center" to={`/profiles/${id}`}>
           <Avatar src={image} height={imageSize} />
@@ -27,17 +31,24 @@ const Profile = (props) => {
         <strong>{owner}</strong>
       </div>
       <div className={`text-end ${!mobile ? "ms-auto" : ""}`}>
-        {!mobile && currentUser && !is_owner && (
-          following_id ? (
-            <Button className={`${btnStyles.Button} btn-sm`} onClick={() => {}}>
+        {!mobile &&
+          currentUser &&
+          !is_owner &&
+          (following_id ? (
+            <Button
+              className={`${btnStyles.Button} ${btnStyles.OutlineUnfollow} btn-sm`}
+              onClick={() => {}}
+            >
               unfollow
             </Button>
           ) : (
-            <Button className={`${btnStyles.Button} btn-sm`} onClick={() => handleFollow(profile)}>
+            <Button
+              className={`${btnStyles.Button} ${btnStyles.AccentFollow} btn-sm`}
+              onClick={() => handleFollow(profile)}
+            >
               follow
             </Button>
-          )
-        )}
+          ))}
       </div>
     </div>
   );

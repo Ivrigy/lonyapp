@@ -15,21 +15,19 @@
   opacity: 0.9;
   border-color: transparent;
   cursor: pointer;
-  background-color: #947eed;
-  color: white;
+  background-color: #cfc3f3;
+  color: #6c757d;
 }
 
-.Button:hover:active {
-  background-color: #8368e2;
-}
-
-.Button:active {
-  background-color: #8368e2;
+.Button:active,
+.Button:hover:active{
+  background-color: #9a8cf0;
+  color: #ffffff;
 }
 
 .Button:focus {
-  background-color: #947eed;
-  color: white;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(165, 158, 249, 0.35);
 }
 
 .Wide {
@@ -38,31 +36,33 @@
 }
 
 .Blue,
-.BlueOutline:hover,
-.Bright:hover {
-  background-color: #a59ef9;
-  color: #ffffff;
-}
-
-.BlueOutline,
-.Blue:hover {
-  background-color: #ffffff;
-  color: #a59ef9;
-}
-
-.Black,
-.BlackOutline:hover {
-  background-color: #242a3d;
-  color: aliceblue;
-}
-
-.Black:hover,
-.BlackOutline {
-  background-color: aliceblue;
-  color: #242a3d;
-}
-
 .Bright {
   background-color: #a59ef9;
   color: #ffffff;
+  border-color: transparent;
+}
+.Blue:hover,
+.Bright:hover {
+  background-color: #cfc3f3;
+  color: #000000;
+}
+
+.AccentFollow {
+  background-color: #a59ef9;
+  color: #ffffff;
+  border-color: transparent;
+}
+.AccentFollow:hover {
+  background-color: #cfc3f3;
+  color: #000000;
+}
+
+.OutlineUnfollow {
+  background-color: #f7f5ff;
+  color: #8075e6;
+}
+
+.OutlineUnfollow:hover {
+  background-color: #cfc3f3;
+  color: #000000;
 }
