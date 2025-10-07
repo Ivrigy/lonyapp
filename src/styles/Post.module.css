@@ -15,10 +15,12 @@ h5 {
   color: #f85032;
 }
 
-.Heart:hover {
-  color: #2142b2;
-}
 
 .HeartOutline:hover {
   color: #f85032;
+}
+
+.Owner {
+  color: #44355B;
+  font-weight: 500;
 }

@@ -86,7 +86,7 @@ const Post = (props) => {
             className="d-flex align-items-center text-decoration-none"
           >
             <Avatar src={profile_image} height={55} />
-            <span className="ms-2">{owner}</span>
+            <span className={`${styles.Owner} ms-2`}>{owner}</span>
           </Link>
           <div className="d-flex align-items-center">
             <span>{updated_at}</span>

@@ -27,8 +27,8 @@ const Profile = (props) => {
           <Avatar src={image} height={imageSize} />
         </Link>
       </div>
-      <div className={`mx-2 ${styles.WordBreak}`}>
-        <strong>{owner}</strong>
+      <div className={`flex-grow-1 ${styles.WordBreak}`}>
+        <span className={styles.Name}>{owner}</span>
       </div>
       <div className={`text-end ${!mobile ? "ms-auto" : ""}`}>
         {!mobile &&
@@ -37,7 +37,7 @@ const Profile = (props) => {
           (following_id ? (
             <Button
               className={`${btnStyles.Button} ${btnStyles.OutlineUnfollow} btn-sm`}
-              onClick={() => handleUnfollow(profile)} 
+              onClick={() => handleUnfollow(profile)}
             >
               unfollow
             </Button>

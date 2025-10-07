@@ -1,3 +1,8 @@
 .WordBreak {
   word-break: break-all;
 }
+
+.Name {
+  color: #44355B;
+  font-weight: 500;
+}
