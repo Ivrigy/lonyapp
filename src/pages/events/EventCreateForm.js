@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import { axiosReq } from "../../api/axiosDefaults";
-
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
@@ -9,11 +8,9 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Alert from "react-bootstrap/Alert";
 import { Image } from "react-bootstrap";
-
 import Asset from "../../components/Asset";
 import Upload from "../../assets/upload.png";
 import { useRedirect } from "../../hooks/useRedirect";
-
 import appStyles from "../../App.module.css";
 import btnStyles from "../../styles/Button.module.css";
 import styles from "../../styles/EventCreateEditForm.module.css";
@@ -44,7 +41,7 @@ function EventCreateForm() {
 
   const handleChangeImage = (e) => {
     if (e.target.files.length) {
-      URL.revokeObjectURL(image);
+      if (image) URL.revokeObjectURL(image);
       setEventData({
         ...eventData,
         image: URL.createObjectURL(e.target.files[0]),
@@ -64,8 +61,15 @@ function EventCreateForm() {
       setErrors({ event_date: ["Please pick a date & time"] });
       return;
     }
-    const formatted = event_date.replace("T", " ");
-    formData.append("event_date", formatted);
+
+    let iso;
+    try {
+      iso = new Date(event_date).toISOString();
+    } catch {
+      setErrors({ event_date: ["Invalid date/time"] });
+      return;
+    }
+    formData.append("event_date", iso);
 
     if (imageInput.current && imageInput.current.files[0]) {
       formData.append("image", imageInput.current.files[0]);
@@ -104,6 +108,7 @@ function EventCreateForm() {
           type="datetime-local"
           name="event_date"
           value={event_date}
+          min={new Date().toISOString().slice(0, 16)}
           onChange={handleChange}
         />
       </Form.Group>
