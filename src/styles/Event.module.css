@@ -1,0 +1,26 @@
+.Event {
+  margin-bottom: 16px;
+}
+
+.Muted {
+  opacity: 0.75;
+  font-size: 0.875rem;
+}
+
+.IconOrange {
+  color: #FF781F;
+}
+
+.MetaRow {
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.EventBar {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 4px;
+  font-size: 1.1rem;
+}

@@ -38,7 +38,7 @@ const NavBar = () => {
     <NavLink
       className={styles.NavLink}
       activeClassName={styles.Active}
-      to="/event/create"
+      to="/events/create"
     >
       <i className="bi bi-calendar-plus"></i> Add event
     </NavLink>
