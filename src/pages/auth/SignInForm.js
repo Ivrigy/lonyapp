@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import {
-  Form,
-  Alert,
-  Button,
-  Col,
-  Row,
-  Container,
-} from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
-
+import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import Image from "react-bootstrap/Image";
+import Container from "react-bootstrap/Container";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import styles from "../../styles/SignInUpForm.module.css";
 import btnStyles from "../../styles/Button.module.css";
 import appStyles from "../../App.module.css";
@@ -20,37 +18,39 @@ function SignInForm() {
   useRedirect("loggedIn");
 
   const setCurrentUser = useSetCurrentUser();
+  const history = useHistory();
+  const location = useLocation();
+
   const [signInData, setSignInData] = useState({ username: "", password: "" });
   const { username, password } = signInData;
-
   const [errors, setErrors] = useState({});
-  const history = useHistory();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const { data } = await axios.post("/dj-rest-auth/login/", signInData);
       setCurrentUser(data.user);
-      history.goBack();
+      const dest = location.state?.from?.pathname || "/";
+      history.replace(dest);
     } catch (err) {
-      setErrors(err.response?.data);
+      setErrors(err.response?.data || {});
     }
   };
 
-  const handleChange = (event) =>
-    setSignInData({ ...signInData, [event.target.name]: event.target.value });
+  const handleChange = (e) =>
+    setSignInData({ ...signInData, [e.target.name]: e.target.value });
 
   return (
-    <Row className={`${styles.Row} align-items-center`}>
+    <Row className={styles.Row}>
       <Col md={6} className="my-auto p-0 p-md-2">
         <Container className={`${appStyles.Content} p-4 shadow-lg rounded`}>
-          <h1 className={styles.Header}>WELCOME TO LONY</h1>
+          <h1 className={styles.Header}>welcome to LONY</h1>
           <p className={styles.Subtitle}>
             The community platform for amazing single parents.
           </p>
-
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="username">
+              <Form.Label className="d-none">Username</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Username"
@@ -61,10 +61,11 @@ function SignInForm() {
               />
             </Form.Group>
             {errors.username?.map((msg, idx) => (
-              <Alert variant="warning" key={idx}>{msg}</Alert>
+              <Alert key={idx} variant="warning">{msg}</Alert>
             ))}
 
             <Form.Group controlId="password">
+              <Form.Label className="d-none">Password</Form.Label>
               <Form.Control
                 type="password"
                 placeholder="Password"
@@ -75,18 +76,15 @@ function SignInForm() {
               />
             </Form.Group>
             {errors.password?.map((msg, idx) => (
-              <Alert variant="warning" key={idx}>{msg}</Alert>
+              <Alert key={idx} variant="warning">{msg}</Alert>
             ))}
 
-            <Button
-              type="submit"
-              className={`${btnStyles.Button} ${btnStyles.Wide} ${btnStyles.Bright}`}
-            >
+            <Button type="submit" className={`${btnStyles.Button} ${btnStyles.Wide} ${btnStyles.Bright}`}>
               Sign in
             </Button>
 
             {errors.non_field_errors?.map((msg, idx) => (
-              <Alert variant="warning" className="mt-3" key={idx}>{msg}</Alert>
+              <Alert className="mt-3" key={idx} variant="warning">{msg}</Alert>
             ))}
           </Form>
         </Container>
@@ -98,14 +96,11 @@ function SignInForm() {
         </Container>
       </Col>
 
-      <Col md={6} className="d-none d-md-flex align-items-center p-2">
-        <div className={styles.Hero}>
-          <img
-            className={styles.HeroImg}
-            src="https://res.cloudinary.com/dhhna0y51/image/upload/v1748006933/lonysignin_nhzike.jpg"
-            alt="Welcome"
-          />
-        </div>
+      <Col md={6} className={`d-none d-md-block p-2 ${styles.SignInCol}`}>
+        <Image
+          src="https://res.cloudinary.com/dhhna0y51/image/upload/v1748006933/lonysignin_nhzike.jpg"
+          className={appStyles.FillerImage}
+        />
       </Col>
     </Row>
   );
