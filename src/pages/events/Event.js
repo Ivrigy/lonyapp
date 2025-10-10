@@ -50,65 +50,46 @@ const Event = (props) => {
   };
 
   const handleLike = async () => {
+    if (like_id) return;
     try {
-      const fd = new FormData();
-      fd.append("event", id);
-      const { data } = await axiosRes.post("/likes/", fd);
-
-      if (eventPage) {
-        setEvents?.((prev) => ({
-          ...prev,
-          likes_count: (prev?.likes_count ?? 0) + 1,
-          like_id: data.id,
-        }));
-      } else {
-        setEvents?.((prev) => ({
+      const { data } = await axiosRes.post("/likes/", { event: id });
+      setEvents?.((prev) => {
+        if (prev && !prev.results) {
+          return { ...prev, likes_count: (prev.likes_count || 0) + 1, like_id: data.id };
+        }
+        return {
           ...prev,
           results: prev.results.map((e) =>
-            e.id === id
-              ? { ...e, likes_count: e.likes_count + 1, like_id: data.id }
-              : e
+            e.id === id ? { ...e, likes_count: e.likes_count + 1, like_id: data.id } : e
           ),
-        }));
-      }
+        };
+      });
     } catch {}
   };
 
   const handleUnlike = async () => {
+    if (!like_id) return;
     try {
       await axiosRes.delete(`/likes/${like_id}/`);
-
-      if (eventPage) {
-        setEvents?.((prev) => ({
-          ...prev,
-          likes_count: Math.max(0, (prev?.likes_count ?? 1) - 1),
-          like_id: null,
-        }));
-      } else {
-        setEvents?.((prev) => ({
+      setEvents?.((prev) => {
+        if (prev && !prev.results) {
+          return { ...prev, likes_count: Math.max(0, (prev.likes_count || 1) - 1), like_id: null };
+        }
+        return {
           ...prev,
           results: prev.results.map((e) =>
-            e.id === id
-              ? { ...e, likes_count: e.likes_count - 1, like_id: null }
-              : e
+            e.id === id ? { ...e, likes_count: e.likes_count - 1, like_id: null } : e
           ),
-        }));
-      }
+        };
+      });
     } catch {}
   };
 
   return (
     <Card className={styles.Event}>
       <Card.Body>
-        <Stack
-          direction="horizontal"
-          className="align-items-center justify-content-between"
-          gap={2}
-        >
-          <Link
-            to={`/profiles/${profile_id}`}
-            className="d-flex align-items-center text-decoration-none"
-          >
+        <Stack direction="horizontal" className="align-items-center justify-content-between" gap={2}>
+          <Link to={`/profiles/${profile_id}`} className="d-flex align-items-center text-decoration-none">
             <Avatar src={profile_image} height={55} />
             <span className="ms-2">{owner}</span>
           </Link>
@@ -146,10 +127,7 @@ const Event = (props) => {
 
         <div className={styles.EventBar}>
           {is_owner ? (
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip>You can't like your own event!</Tooltip>}
-            >
+            <OverlayTrigger placement="top" overlay={<Tooltip>You can't like your own event!</Tooltip>}>
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           ) : like_id ? (
@@ -161,10 +139,7 @@ const Event = (props) => {
               <i className="bi bi-suit-heart" />
             </span>
           ) : (
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip>Log in to like events!</Tooltip>}
-            >
+            <OverlayTrigger placement="top" overlay={<Tooltip>Log in to like events!</Tooltip>}>
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           )}
