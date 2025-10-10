@@ -86,8 +86,12 @@ const Event = (props) => {
     } catch (err) {
       if (err.response?.status === 400) {
         try {
-          const { data } = await axiosRes.get("/likes/", { params: { event: id } });
-          const mine = data.results?.find((l) => l.owner === currentUser?.username);
+          const { data } = await axiosRes.get("/likes/", {
+            params: { event: id },
+          });
+          const mine = data.results?.find(
+            (l) => l.owner === currentUser?.username
+          );
           if (mine?.id) bump(0, mine.id);
         } catch {}
       }
@@ -101,8 +105,12 @@ const Event = (props) => {
     try {
       let toDelete = like_id;
       if (!toDelete) {
-        const { data } = await axiosRes.get("/likes/", { params: { event: id } });
-        const mine = data.results?.find((l) => l.owner === currentUser?.username);
+        const { data } = await axiosRes.get("/likes/", {
+          params: { event: id },
+        });
+        const mine = data.results?.find(
+          (l) => l.owner === currentUser?.username
+        );
         toDelete = mine?.id;
         if (!toDelete) {
           busy.current = false;
@@ -133,7 +141,10 @@ const Event = (props) => {
           <div className="d-flex align-items-center">
             <span className={styles.Muted}>{updated_at}</span>
             {is_owner && eventPage && (
-              <MoreDropdown handleEdit={handleEdit} handleDelete={handleDelete} />
+              <MoreDropdown
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+              />
             )}
           </div>
         </Stack>
@@ -141,7 +152,11 @@ const Event = (props) => {
 
       {image && (
         <Link to={`/events/${id}`}>
-          <Card.Img src={image} alt={title} />
+          <Card.Img
+            src={image}
+            alt={title}
+            className={eventPage ? styles.EventImageLarge : styles.EventImage}
+          />
         </Link>
       )}
 
