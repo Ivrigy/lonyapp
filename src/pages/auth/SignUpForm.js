@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 import {
   Form,
@@ -10,6 +9,7 @@ import {
   Container,
   Alert,
 } from "react-bootstrap";
+import { Link, useHistory } from "react-router-dom";
 
 import styles from "../../styles/SignInUpForm.module.css";
 import btnStyles from "../../styles/Button.module.css";
@@ -29,9 +29,8 @@ const SignUpForm = () => {
   const [errors, setErrors] = useState({});
   const history = useHistory();
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setSignUpData({ ...signUpData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,17 +43,16 @@ const SignUpForm = () => {
   };
 
   return (
-    <Row className={styles.Row}>
+    <Row className={`${styles.Row} align-items-center`}>
       <Col className="my-auto py-2 p-md-2" md={6}>
         <Container className={`${appStyles.Content} p-4 shadow-lg rounded`}>
-          <h1 className={styles.Header}>create new account</h1>
+          <h1 className={styles.Header}>CREATE NEW ACCOUNT</h1>
           <p className={styles.Subtitle}>
             The community platform for amazing single parents.
           </p>
 
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="username">
-              <Form.Label className="d-none">username</Form.Label>
               <Form.Control
                 className={styles.Input}
                 type="text"
@@ -65,13 +63,10 @@ const SignUpForm = () => {
               />
             </Form.Group>
             {errors.username?.map((msg, idx) => (
-              <Alert variant="warning" key={idx}>
-                {msg}
-              </Alert>
+              <Alert variant="warning" key={idx}>{msg}</Alert>
             ))}
 
             <Form.Group controlId="password1">
-              <Form.Label className="d-none">password</Form.Label>
               <Form.Control
                 className={styles.Input}
                 type="password"
@@ -82,13 +77,10 @@ const SignUpForm = () => {
               />
             </Form.Group>
             {errors.password1?.map((msg, idx) => (
-              <Alert variant="warning" key={idx}>
-                {msg}
-              </Alert>
+              <Alert variant="warning" key={idx}>{msg}</Alert>
             ))}
 
             <Form.Group controlId="password2">
-              <Form.Label className="d-none">confirm password</Form.Label>
               <Form.Control
                 className={styles.Input}
                 type="password"
@@ -99,9 +91,7 @@ const SignUpForm = () => {
               />
             </Form.Group>
             {errors.password2?.map((msg, idx) => (
-              <Alert variant="warning" key={idx}>
-                {msg}
-              </Alert>
+              <Alert variant="warning" key={idx}>{msg}</Alert>
             ))}
 
             <Button
@@ -112,9 +102,7 @@ const SignUpForm = () => {
             </Button>
 
             {errors.non_field_errors?.map((msg, idx) => (
-              <Alert variant="warning" className="mt-3" key={idx}>
-                {msg}
-              </Alert>
+              <Alert variant="warning" className="mt-3" key={idx}>{msg}</Alert>
             ))}
           </Form>
         </Container>
@@ -126,12 +114,12 @@ const SignUpForm = () => {
         </Container>
       </Col>
 
-      <Col md={6} className={`my-auto d-none d-md-block p-2 ${styles.SignUpCol}`}>
+      <Col md={6} className="d-none d-md-flex align-items-center p-2">
         <div className={styles.Hero}>
           <Image
             className={styles.HeroImg}
             src="https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
-            alt="Welcome"
+            alt="Join"
           />
         </div>
       </Col>
