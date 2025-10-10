@@ -25,6 +25,7 @@ import EventEditForm from "./pages/events/EventEditForm";
 import EventPage from "./pages/events/EventPage";
 
 import PrivateRoute from "./components/PrivateRoute";
+import NotFound from "./components/NotFound";
 
 function App() {
   const currentUser = useCurrentUser();
@@ -95,7 +96,7 @@ function App() {
           </PrivateRoute>
 
           {/* 404 */}
-          <Route render={() => <p>Page not found!</p>} />
+          <Route render={() => <NotFound />} />
         </Switch>
       </Container>
     </div>
