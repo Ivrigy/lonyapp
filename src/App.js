@@ -23,7 +23,6 @@ import EventsPage from "./pages/events/EventsPage";
 import EventCreateForm from "./pages/events/EventCreateForm";
 import EventEditForm from "./pages/events/EventEditForm";
 import EventPage from "./pages/events/EventPage";
-
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
@@ -35,7 +34,8 @@ function App() {
       <NavBar />
       <Container className={styles.Main}>
         <Switch>
-          <PrivateRoute
+          {/* public */}
+          <Route
             exact
             path="/"
             render={() => (
@@ -44,7 +44,43 @@ function App() {
           />
           <Route exact path="/signin" render={() => <SignInForm />} />
           <Route exact path="/signup" render={() => <SignUpForm />} />
+
+          {/* protected feeds */}
+          <PrivateRoute exact path="/feed">
+            <PostsPage
+              message="No results found. Adjust the search keyword or follow a user."
+              filter={`owner__followed__owner__profile=${profile_id}&`}
+            />
+          </PrivateRoute>
+          <PrivateRoute exact path="/liked">
+            <PostsPage
+              message="No results found. Adjust the search keyword or like a post."
+              filter={`likes__owner__profile=${profile_id}&ordering=-likes__created_at&`}
+            />
+          </PrivateRoute>
+
+          {/* posts — create/edit BEFORE :id */}
+          <PrivateRoute exact path="/posts/create">
+            <PostCreateForm />
+          </PrivateRoute>
+          <PrivateRoute exact path="/posts/:id/edit">
+            <PostEditForm />
+          </PrivateRoute>
           <Route exact path="/posts/:id" render={() => <PostPage />} />
+
+          {/* profiles */}
+          <Route exact path="/profiles/:id" render={() => <ProfilePage />} />
+          <PrivateRoute exact path="/profiles/:id/edit/username">
+            <UsernameForm />
+          </PrivateRoute>
+          <PrivateRoute exact path="/profiles/:id/edit/password">
+            <UserPasswordForm />
+          </PrivateRoute>
+          <PrivateRoute exact path="/profiles/:id/edit">
+            <ProfileEditForm />
+          </PrivateRoute>
+
+          {/* events — create/edit BEFORE :id */}
           <Route
             exact
             path="/events"
@@ -52,69 +88,14 @@ function App() {
               <EventsPage message="No events found. Adjust the search keyword." />
             )}
           />
+          <PrivateRoute exact path="/events/create">
+            <EventCreateForm />
+          </PrivateRoute>
+          <PrivateRoute exact path="/events/:id/edit">
+            <EventEditForm />
+          </PrivateRoute>
           <Route exact path="/events/:id" render={() => <EventPage />} />
-          <Route exact path="/profiles/:id" render={() => <ProfilePage />} />
 
-          {/* protected */}
-          <PrivateRoute
-            exact
-            path="/feed"
-            render={() => (
-              <PostsPage
-                message="No results found. Adjust the search keyword or follow a user."
-                filter={`owner__followed__owner__profile=${profile_id}&`}
-              />
-            )}
-          />
-          <PrivateRoute
-            exact
-            path="/liked"
-            render={() => (
-              <PostsPage
-                message="No results found. Adjust the search keyword or like a post."
-                filter={`likes__owner__profile=${profile_id}&ordering=-likes__created_at&`}
-              />
-            )}
-          />
-          <PrivateRoute
-            exact
-            path="/posts/create"
-            render={() => <PostCreateForm />}
-          />
-          <PrivateRoute
-            exact
-            path="/posts/:id/edit"
-            render={() => <PostEditForm />}
-          />
-
-          <PrivateRoute
-            exact
-            path="/events/create"
-            render={() => <EventCreateForm />}
-          />
-          <PrivateRoute
-            exact
-            path="/events/:id/edit"
-            render={() => <EventEditForm />}
-          />
-
-          <PrivateRoute
-            exact
-            path="/profiles/:id/edit/username"
-            render={() => <UsernameForm />}
-          />
-          <PrivateRoute
-            exact
-            path="/profiles/:id/edit/password"
-            render={() => <UserPasswordForm />}
-          />
-          <PrivateRoute
-            exact
-            path="/profiles/:id/edit"
-            render={() => <ProfileEditForm />}
-          />
-
-          {/* 404 */}
           <Route render={() => <p>Page not found!</p>} />
         </Switch>
       </Container>

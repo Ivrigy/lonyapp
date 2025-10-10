@@ -2,21 +2,26 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { useCurrentUser } from "../contexts/CurrentUserContext";
 
-export default function PrivateRoute({ component: Component, render, ...rest }) {
+const PrivateRoute = ({ children, ...rest }) => {
   const currentUser = useCurrentUser();
 
   return (
     <Route
       {...rest}
-      render={(props) =>
+      render={({ location }) =>
         currentUser ? (
-          Component ? <Component {...props} /> : render ? render(props) : null
+          children
         ) : (
           <Redirect
-            to={{ pathname: "/signin", state: { from: props.location } }}
+            to={{
+              pathname: "/signin",
+              state: { from: location.pathname },
+            }}
           />
         )
       }
     />
   );
-}
+};
+
+export default PrivateRoute;
