@@ -35,8 +35,7 @@ function App() {
       <NavBar />
       <Container className={styles.Main}>
         <Switch>
-          {/* public */}
-          <Route
+          <PrivateRoute
             exact
             path="/"
             render={() => (
@@ -77,11 +76,27 @@ function App() {
               />
             )}
           />
-          <PrivateRoute exact path="/posts/create" render={() => <PostCreateForm />} />
-          <PrivateRoute exact path="/posts/:id/edit" render={() => <PostEditForm />} />
+          <PrivateRoute
+            exact
+            path="/posts/create"
+            render={() => <PostCreateForm />}
+          />
+          <PrivateRoute
+            exact
+            path="/posts/:id/edit"
+            render={() => <PostEditForm />}
+          />
 
-          <PrivateRoute exact path="/events/create" render={() => <EventCreateForm />} />
-          <PrivateRoute exact path="/events/:id/edit" render={() => <EventEditForm />} />
+          <PrivateRoute
+            exact
+            path="/events/create"
+            render={() => <EventCreateForm />}
+          />
+          <PrivateRoute
+            exact
+            path="/events/:id/edit"
+            render={() => <EventEditForm />}
+          />
 
           <PrivateRoute
             exact
