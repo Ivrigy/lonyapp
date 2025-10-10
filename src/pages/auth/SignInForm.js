@@ -13,6 +13,7 @@ import btnStyles from "../../styles/Button.module.css";
 import appStyles from "../../App.module.css";
 import { useSetCurrentUser } from "../../contexts/CurrentUserContext";
 import { useRedirect } from "../../hooks/useRedirect";
+import { setTokenTimestamp } from "../../utils/utils";
 
 function SignInForm() {
   useRedirect("loggedIn");
@@ -30,6 +31,7 @@ function SignInForm() {
     try {
       const { data } = await axios.post("/dj-rest-auth/login/", signInData);
       setCurrentUser(data.user);
+      setTokenTimestamp(data);
       const dest = location.state?.from?.pathname || "/";
       history.replace(dest);
     } catch (err) {
@@ -61,7 +63,9 @@ function SignInForm() {
               />
             </Form.Group>
             {errors.username?.map((msg, idx) => (
-              <Alert key={idx} variant="warning">{msg}</Alert>
+              <Alert key={idx} variant="warning">
+                {msg}
+              </Alert>
             ))}
 
             <Form.Group controlId="password">
@@ -76,7 +80,9 @@ function SignInForm() {
               />
             </Form.Group>
             {errors.password?.map((msg, idx) => (
-              <Alert key={idx} variant="warning">{msg}</Alert>
+              <Alert key={idx} variant="warning">
+                {msg}
+              </Alert>
             ))}
 
             <Button
@@ -87,7 +93,9 @@ function SignInForm() {
             </Button>
 
             {errors.non_field_errors?.map((msg, idx) => (
-              <Alert className="mt-3" key={idx} variant="warning">{msg}</Alert>
+              <Alert className="mt-3" key={idx} variant="warning">
+                {msg}
+              </Alert>
             ))}
           </Form>
         </Container>

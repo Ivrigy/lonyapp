@@ -1,6 +1,7 @@
-
 import React from "react";
-import { Navbar, Container, Nav } from "react-bootstrap";
+import Navbar from "react-bootstrap/Navbar";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
 import logo from "../assets/logo.png";
 import styles from "../styles/NavBar.module.css";
 import { NavLink } from "react-router-dom";
@@ -8,6 +9,7 @@ import { useCurrentUser, useSetCurrentUser } from "../contexts/CurrentUserContex
 import Avatar from "./Avatar";
 import axios from "axios";
 import useClickOutsideToggle from "../hooks/useClickOutsideToggle";
+import { removeTokenTimestamp } from "../utils/utils";
 
 const NavBar = () => {
   const currentUser = useCurrentUser();
@@ -19,9 +21,8 @@ const NavBar = () => {
     try {
       await axios.post("dj-rest-auth/logout/");
       setCurrentUser(null);
-    } catch (err) {
-      console.log(err);
-    }
+      removeTokenTimestamp();
+    } catch (err) {}
   };
 
   const addPostIcon = (
@@ -46,38 +47,19 @@ const NavBar = () => {
 
   const loggedInIcons = (
     <>
-      <NavLink
-        className={styles.NavLink}
-        activeClassName={styles.Active}
-        to="/feed"
-      >
+      <NavLink className={styles.NavLink} activeClassName={styles.Active} to="/feed">
         <i className="bi bi-justify"></i> Feed
       </NavLink>
-      <NavLink
-        className={styles.NavLink}
-        activeClassName={styles.Active}
-        to="/events"
-      >
+      <NavLink className={styles.NavLink} activeClassName={styles.Active} to="/events">
         <i className="bi bi-calendar-week"></i> Events
       </NavLink>
-      <NavLink
-        className={styles.NavLink}
-        activeClassName={styles.Active}
-        to="/liked"
-      >
+      <NavLink className={styles.NavLink} activeClassName={styles.Active} to="/liked">
         <i className="bi bi-suit-heart"></i> Liked
       </NavLink>
-      <NavLink
-        className={styles.NavLink}
-        to="/"
-        onClick={handleSignOut}
-      >
+      <NavLink className={styles.NavLink} to="/" onClick={handleSignOut}>
         <i className="bi bi-arrow-bar-right"></i> Sign out
       </NavLink>
-      <NavLink
-        className={styles.NavLink}
-        to={`/profiles/${currentUser?.profile_id}`}
-      >
+      <NavLink className={styles.NavLink} to={`/profiles/${currentUser?.profile_id}`}>
         <Avatar src={currentUser?.profile_image} text="Profile" height={40} />
       </NavLink>
     </>
@@ -85,18 +67,10 @@ const NavBar = () => {
 
   const loggedOutIcons = (
     <>
-      <NavLink
-        className={styles.NavLink}
-        activeClassName={styles.Active}
-        to="/signin"
-      >
+      <NavLink className={styles.NavLink} activeClassName={styles.Active} to="/signin">
         <i className="bi bi-door-open"></i> Sign in
       </NavLink>
-      <NavLink
-        className={styles.NavLink}
-        activeClassName={styles.Active}
-        to="/signup"
-      >
+      <NavLink className={styles.NavLink} activeClassName={styles.Active} to="/signup">
         <i className="bi bi-door-closed-fill"></i> Sign up
       </NavLink>
     </>
@@ -114,20 +88,16 @@ const NavBar = () => {
         {currentUser && addPostIcon}
         {currentUser && addEventIcon}
 
-        <Navbar.Toggle ref={ref}
+        <Navbar.Toggle
+          ref={ref}
           onClick={() => setExpanded(!expanded)}
-          aria-controls="basic-navbar-nav" />
+          aria-controls="basic-navbar-nav"
+        />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto text-left">
-            <NavLink
-              exact
-              className={styles.NavLink}
-              activeClassName={styles.Active}
-              to="/"
-            >
+            <NavLink exact className={styles.NavLink} activeClassName={styles.Active} to="/">
               <i className="bi bi-house-door"></i> Home
             </NavLink>
-
             {currentUser ? loggedInIcons : loggedOutIcons}
           </Nav>
         </Navbar.Collapse>
