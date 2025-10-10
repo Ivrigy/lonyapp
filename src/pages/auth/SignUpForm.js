@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-
-import styles from "../../styles/SignInUpForm.module.css";
-import btnStyles from "../../styles/Button.module.css";
-import appStyles from "../../App.module.css";
-
+import axios from "axios";
 import {
   Form,
   Button,
@@ -14,7 +10,10 @@ import {
   Container,
   Alert,
 } from "react-bootstrap";
-import axios from "axios";
+
+import styles from "../../styles/SignInUpForm.module.css";
+import btnStyles from "../../styles/Button.module.css";
+import appStyles from "../../App.module.css";
 import { useRedirect } from "../../hooks/useRedirect";
 
 const SignUpForm = () => {
@@ -28,14 +27,10 @@ const SignUpForm = () => {
   const { username, password1, password2 } = signUpData;
 
   const [errors, setErrors] = useState({});
-
   const history = useHistory();
 
   const handleChange = (e) => {
-    setSignUpData({
-      ...signUpData,
-      [e.target.name]: e.target.value,
-    });
+    setSignUpData({ ...signUpData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -53,6 +48,9 @@ const SignUpForm = () => {
       <Col className="my-auto py-2 p-md-2" md={6}>
         <Container className={`${appStyles.Content} p-4 shadow-lg rounded`}>
           <h1 className={styles.Header}>create new account</h1>
+          <p className={styles.Subtitle}>
+            The community platform for amazing single parents.
+          </p>
 
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="username">
@@ -129,10 +127,13 @@ const SignUpForm = () => {
       </Col>
 
       <Col md={6} className={`my-auto d-none d-md-block p-2 ${styles.SignUpCol}`}>
-        <Image
-          className={appStyles.FillerImage}
-          src="https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
-        />
+        <div className={styles.Hero}>
+          <Image
+            className={styles.HeroImg}
+            src="https://res.cloudinary.com/dhhna0y51/image/upload/v1747916199/lonysignup_bdnwa5.jpg"
+            alt="Welcome"
+          />
+        </div>
       </Col>
     </Row>
   );
