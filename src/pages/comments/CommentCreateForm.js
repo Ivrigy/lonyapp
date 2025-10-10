@@ -8,7 +8,15 @@ import btnStyles from "../../styles/Button.module.css";
 import Avatar from "../../components/Avatar";
 import { axiosRes } from "../../api/axiosDefaults";
 
-function CommentCreateForm({ post, setPost, setComments, profileImage, profile_id }) {
+function CommentCreateForm({
+  post,
+  event,
+  setPost,
+  setEvent,
+  setComments,
+  profileImage,
+  profile_id,
+}) {
   const [content, setContent] = useState("");
 
   const handleChange = (e) => setContent(e.target.value);
@@ -16,13 +24,32 @@ function CommentCreateForm({ post, setPost, setComments, profileImage, profile_i
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axiosRes.post("/comments/", { content, post });
+      const payload = { content: content.trim() };
+      if (post) payload.post = post;
+      if (event) payload.event = event;
+
+      const { data } = await axiosRes.post("/comments/", payload);
+
       setComments((prev) => ({ ...prev, results: [data, ...prev.results] }));
-      setPost((prev) => ({
-        results: [
-          { ...prev.results[0], comments_count: prev.results[0].comments_count + 1 },
-        ],
-      }));
+
+      if (setPost) {
+        setPost((prev) => ({
+          results: [
+            {
+              ...prev.results[0],
+              comments_count: prev.results[0].comments_count + 1,
+            },
+          ],
+        }));
+      }
+
+      if (setEvent) {
+        setEvent((prev) => ({
+          ...prev,
+          comments_count: (prev?.comments_count || 0) + 1,
+        }));
+      }
+
       setContent("");
     } catch (err) {
       console.error(err);

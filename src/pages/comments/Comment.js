@@ -16,6 +16,7 @@ const Comment = ({
   content,
   id,
   setPost,
+  setEvent,
   setComments,
 }) => {
   const currentUser = useCurrentUser();
@@ -26,14 +27,25 @@ const Comment = ({
   const handleDelete = async () => {
     try {
       await axiosRes.delete(`/comments/${id}/`);
-      setPost((prevPost) => ({
-        results: [
-          {
-            ...prevPost.results[0],
-            comments_count: prevPost.results[0].comments_count - 1,
-          },
-        ],
-      }));
+
+      if (setPost) {
+        setPost((prevPost) => ({
+          results: [
+            {
+              ...prevPost.results[0],
+              comments_count: prevPost.results[0].comments_count - 1,
+            },
+          ],
+        }));
+      }
+
+      if (setEvent) {
+        setEvent((prev) => ({
+          ...prev,
+          comments_count: (prev?.comments_count || 1) - 1,
+        }));
+      }
+
       setComments((prevComments) => ({
         ...prevComments,
         results: prevComments.results.filter((comment) => comment.id !== id),
