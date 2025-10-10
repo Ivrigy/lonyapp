@@ -7,7 +7,6 @@ import Avatar from "../../components/Avatar";
 import { axiosRes } from "../../api/axiosDefaults";
 import { MoreDropdown } from "../../components/MoreDropdown";
 
-
 const Post = (props) => {
   const {
     id,
@@ -44,10 +43,12 @@ const Post = (props) => {
 
   const handleLike = async () => {
     try {
-      const { data } = await axiosRes.post("/likes/", { post: id });
-      setPosts(prev => ({
+      const fd = new FormData();
+      fd.append("post", id);
+      const { data } = await axiosRes.post("/likes/", fd);
+      setPosts((prev) => ({
         ...prev,
-        results: prev.results.map(p =>
+        results: prev.results.map((p) =>
           p.id === id
             ? { ...p, likes_count: p.likes_count + 1, like_id: data.id }
             : p
@@ -61,9 +62,9 @@ const Post = (props) => {
   const handleUnlike = async () => {
     try {
       await axiosRes.delete(`/likes/${like_id}/`);
-      setPosts(prev => ({
+      setPosts((prev) => ({
         ...prev,
-        results: prev.results.map(p =>
+        results: prev.results.map((p) =>
           p.id === id
             ? { ...p, likes_count: p.likes_count - 1, like_id: null }
             : p

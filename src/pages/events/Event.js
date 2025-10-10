@@ -51,24 +51,29 @@ const Event = (props) => {
 
   const handleLike = async () => {
     try {
-      const { data } = await axiosRes.post(`/likes/`, { event: id });
+      const fd = new FormData();
+      fd.append("event", id);
+      const { data } = await axiosRes.post("/likes/", fd);
       setEvents?.((prev) => ({
         ...prev,
         results: prev.results.map((e) =>
-          e.id === id ? { ...e, likes_count: e.likes_count + 1, like_id: data.id } : e
+          e.id === id
+            ? { ...e, likes_count: e.likes_count + 1, like_id: data.id }
+            : e
         ),
       }));
     } catch {}
   };
 
-  // ✅ delete at /likes/<like_id>/
   const handleUnlike = async () => {
     try {
       await axiosRes.delete(`/likes/${like_id}/`);
       setEvents?.((prev) => ({
         ...prev,
         results: prev.results.map((e) =>
-          e.id === id ? { ...e, likes_count: e.likes_count - 1, like_id: null } : e
+          e.id === id
+            ? { ...e, likes_count: e.likes_count - 1, like_id: null }
+            : e
         ),
       }));
     } catch {}
@@ -77,15 +82,25 @@ const Event = (props) => {
   return (
     <Card className={styles.Event}>
       <Card.Body>
-        <Stack direction="horizontal" className="align-items-center justify-content-between" gap={2}>
-          <Link to={`/profiles/${profile_id}`} className="d-flex align-items-center text-decoration-none">
+        <Stack
+          direction="horizontal"
+          className="align-items-center justify-content-between"
+          gap={2}
+        >
+          <Link
+            to={`/profiles/${profile_id}`}
+            className="d-flex align-items-center text-decoration-none"
+          >
             <Avatar src={profile_image} height={55} />
             <span className="ms-2">{owner}</span>
           </Link>
           <div className="d-flex align-items-center">
             <span className={styles.Muted}>{updated_at}</span>
             {is_owner && eventPage && (
-              <MoreDropdown handleEdit={handleEdit} handleDelete={handleDelete} />
+              <MoreDropdown
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+              />
             )}
           </div>
         </Stack>
@@ -116,7 +131,10 @@ const Event = (props) => {
 
         <div className={styles.EventBar}>
           {is_owner ? (
-            <OverlayTrigger placement="top" overlay={<Tooltip>You can't like your own event!</Tooltip>}>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>You can't like your own event!</Tooltip>}
+            >
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           ) : like_id ? (
@@ -128,7 +146,10 @@ const Event = (props) => {
               <i className="bi bi-suit-heart" />
             </span>
           ) : (
-            <OverlayTrigger placement="top" overlay={<Tooltip>Log in to like events!</Tooltip>}>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Log in to like events!</Tooltip>}
+            >
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           )}
