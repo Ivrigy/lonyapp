@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Container, Button, Image } from "react-bootstrap";
+import { Row, Col, Container, Button, Image, Tabs, Tab } from "react-bootstrap";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import Asset from "../../components/Asset";
 import NoResults from "../../assets/no-results.png";
+
 import Post from "../posts/Post";
 import Event from "../events/Event";
-import { fetchMoreData } from "../../utils/utils";
 
+import { fetchMoreData } from "../../utils/utils";
 import styles from "../../styles/ProfilePage.module.css";
 import appStyles from "../../App.module.css";
 import btnStyles from "../../styles/Button.module.css";
@@ -21,6 +22,8 @@ import { ProfileEditDropdown } from "../../components/MoreDropdown";
 
 function ProfilePage() {
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [activeKey, setActiveKey] = useState("posts");
+
   const [profilePosts, setProfilePosts] = useState({ results: [] });
   const [profileEvents, setProfileEvents] = useState({ results: [] });
 
@@ -29,7 +32,6 @@ function ProfilePage() {
 
   const { setProfileData, handleFollow, handleUnfollow } = useSetProfileData();
   const { pageProfile } = useProfileData();
-
   const [profile] = pageProfile.results || [];
   const is_owner = currentUser?.username === profile?.owner;
 
@@ -65,6 +67,7 @@ function ProfilePage() {
         <Col lg={3} className="text-lg-start">
           <Image className={styles.ProfileImage} roundedCircle src={profile?.image} />
         </Col>
+
         <Col lg={6}>
           <h3 className="m-2">{profile?.owner}</h3>
           <Row className="justify-content-center g-0">
@@ -86,6 +89,7 @@ function ProfilePage() {
             </Col>
           </Row>
         </Col>
+
         <Col lg={3} className="text-lg-end">
           {currentUser && !is_owner && (
             profile?.following_id ? (
@@ -105,16 +109,14 @@ function ProfilePage() {
             )
           )}
         </Col>
+
         {profile?.content && <Col className="p-3">{profile.content}</Col>}
       </Row>
     </>
   );
 
-  const mainProfilePosts = (
+  const postsTab = (
     <>
-      <hr />
-      <p className="text-center">{profile?.owner}'s posts</p>
-      <hr />
       {profilePosts.results.length ? (
         <InfiniteScroll
           children={profilePosts.results.map((post) => (
@@ -134,15 +136,12 @@ function ProfilePage() {
     </>
   );
 
-  const mainProfileEvents = (
+  const eventsTab = (
     <>
-      <hr />
-      <p className="text-center">{profile?.owner}'s events</p>
-      <hr />
       {profileEvents.results.length ? (
         <InfiniteScroll
-          children={profileEvents.results.map((evt) => (
-            <Event key={evt.id} {...evt} setEvents={setProfileEvents} />
+          children={profileEvents.results.map((event) => (
+            <Event key={event.id} {...event} setEvents={setProfileEvents} />
           ))}
           dataLength={profileEvents.results.length}
           loader={<Asset spinner />}
@@ -166,14 +165,27 @@ function ProfilePage() {
           {hasLoaded ? (
             <>
               {mainProfile}
-              {mainProfilePosts}
-              {mainProfileEvents}
+              <hr />
+              <Tabs
+                id="profile-tabs"
+                activeKey={activeKey}
+                onSelect={(k) => setActiveKey(k)}
+                className="mt-2"
+              >
+                <Tab eventKey="posts" title="Posts">
+                  <div className="mt-3">{postsTab}</div>
+                </Tab>
+                <Tab eventKey="events" title="Events">
+                  <div className="mt-3">{eventsTab}</div>
+                </Tab>
+              </Tabs>
             </>
           ) : (
             <Asset spinner />
           )}
         </Container>
       </Col>
+
       <Col lg={4} className="d-none d-lg-block p-0 p-lg-2">
         <PopularProfiles />
       </Col>
