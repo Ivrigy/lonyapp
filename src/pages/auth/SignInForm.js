@@ -79,7 +79,10 @@ function SignInForm() {
               <Alert key={idx} variant="warning">{msg}</Alert>
             ))}
 
-            <Button type="submit" className={`${btnStyles.Button} ${btnStyles.Wide} ${btnStyles.Bright}`}>
+            <Button
+              type="submit"
+              className={`${btnStyles.Button} ${btnStyles.Wide} ${btnStyles.Bright}`}
+            >
               Sign in
             </Button>
 
@@ -96,11 +99,15 @@ function SignInForm() {
         </Container>
       </Col>
 
-      <Col md={6} className={`d-none d-md-block p-2 ${styles.SignInCol}`}>
-        <Image
-          src="https://res.cloudinary.com/dhhna0y51/image/upload/v1748006933/lonysignin_nhzike.jpg"
-          className={appStyles.FillerImage}
-        />
+      <Col md={6} className={`d-none d-md-flex p-2 ${styles.SignInCol}`}>
+        <div className={styles.Hero}>
+          <Image
+            src="https://res.cloudinary.com/dhhna0y51/image/upload/v1748006933/lonysignin_nhzike.jpg"
+            className={styles.HeroImg}
+            alt="Welcome illustration"
+            fluid
+          />
+        </div>
       </Col>
     </Row>
   );
