@@ -54,28 +54,46 @@ const Event = (props) => {
       const fd = new FormData();
       fd.append("event", id);
       const { data } = await axiosRes.post("/likes/", fd);
-      setEvents?.((prev) => ({
-        ...prev,
-        results: prev.results.map((e) =>
-          e.id === id
-            ? { ...e, likes_count: e.likes_count + 1, like_id: data.id }
-            : e
-        ),
-      }));
+
+      if (eventPage) {
+        setEvents?.((prev) => ({
+          ...prev,
+          likes_count: (prev?.likes_count ?? 0) + 1,
+          like_id: data.id,
+        }));
+      } else {
+        setEvents?.((prev) => ({
+          ...prev,
+          results: prev.results.map((e) =>
+            e.id === id
+              ? { ...e, likes_count: e.likes_count + 1, like_id: data.id }
+              : e
+          ),
+        }));
+      }
     } catch {}
   };
 
   const handleUnlike = async () => {
     try {
       await axiosRes.delete(`/likes/${like_id}/`);
-      setEvents?.((prev) => ({
-        ...prev,
-        results: prev.results.map((e) =>
-          e.id === id
-            ? { ...e, likes_count: e.likes_count - 1, like_id: null }
-            : e
-        ),
-      }));
+
+      if (eventPage) {
+        setEvents?.((prev) => ({
+          ...prev,
+          likes_count: Math.max(0, (prev?.likes_count ?? 1) - 1),
+          like_id: null,
+        }));
+      } else {
+        setEvents?.((prev) => ({
+          ...prev,
+          results: prev.results.map((e) =>
+            e.id === id
+              ? { ...e, likes_count: e.likes_count - 1, like_id: null }
+              : e
+          ),
+        }));
+      }
     } catch {}
   };
 
@@ -97,10 +115,7 @@ const Event = (props) => {
           <div className="d-flex align-items-center">
             <span className={styles.Muted}>{updated_at}</span>
             {is_owner && eventPage && (
-              <MoreDropdown
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-              />
+              <MoreDropdown handleEdit={handleEdit} handleDelete={handleDelete} />
             )}
           </div>
         </Stack>
