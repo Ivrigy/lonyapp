@@ -29,6 +29,7 @@ const Event = (props) => {
   const currentUser = useCurrentUser();
   const is_owner = currentUser?.username === owner;
   const history = useHistory();
+  const busy = useRef(false);
 
   const formattedDateTime = event_date
     ? new Date(event_date).toLocaleString("en-GB", {
@@ -39,8 +40,6 @@ const Event = (props) => {
         minute: "2-digit",
       })
     : "";
-
-  const busy = useRef(false);
 
   const handleEdit = () => history.push(`/events/${id}/edit`);
 
@@ -78,19 +77,39 @@ const Event = (props) => {
     if (busy.current) return;
     busy.current = true;
     try {
-      const fd = new FormData();
-      fd.append("event", id);
-      const { data } = await axiosRes.post("/likes/", fd);
+      const { data } = await axiosRes.post(
+        "/likes/",
+        { event: id },
+        { headers: { "Content-Type": "application/json" } }
+      );
       bump(+1, data.id);
-    } catch {}
+    } catch (err) {
+      if (err.response?.status === 400) {
+        try {
+          const { data } = await axiosRes.get("/likes/", { params: { event: id } });
+          const mine = data.results?.find((l) => l.owner === currentUser?.username);
+          if (mine?.id) bump(0, mine.id);
+        } catch {}
+      }
+    }
     busy.current = false;
   };
 
   const handleUnlike = async () => {
-    if (busy.current || !like_id) return;
+    if (busy.current) return;
     busy.current = true;
     try {
-      await axiosRes.delete(`/likes/${like_id}/`);
+      let toDelete = like_id;
+      if (!toDelete) {
+        const { data } = await axiosRes.get("/likes/", { params: { event: id } });
+        const mine = data.results?.find((l) => l.owner === currentUser?.username);
+        toDelete = mine?.id;
+        if (!toDelete) {
+          busy.current = false;
+          return;
+        }
+      }
+      await axiosRes.delete(`/likes/${toDelete}/`);
       bump(-1, null);
     } catch {}
     busy.current = false;
@@ -99,8 +118,15 @@ const Event = (props) => {
   return (
     <Card className={styles.Event}>
       <Card.Body>
-        <Stack direction="horizontal" className="align-items-center justify-content-between" gap={2}>
-          <Link to={`/profiles/${profile_id}`} className="d-flex align-items-center text-decoration-none">
+        <Stack
+          direction="horizontal"
+          className="align-items-center justify-content-between"
+          gap={2}
+        >
+          <Link
+            to={`/profiles/${profile_id}`}
+            className="d-flex align-items-center text-decoration-none"
+          >
             <Avatar src={profile_image} height={55} />
             <span className="ms-2">{owner}</span>
           </Link>
@@ -138,7 +164,10 @@ const Event = (props) => {
 
         <div className={styles.EventBar}>
           {is_owner ? (
-            <OverlayTrigger placement="top" overlay={<Tooltip>You can't like your own event!</Tooltip>}>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>You can't like your own event!</Tooltip>}
+            >
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           ) : like_id ? (
@@ -150,7 +179,10 @@ const Event = (props) => {
               <i className="bi bi-suit-heart" />
             </span>
           ) : (
-            <OverlayTrigger placement="top" overlay={<Tooltip>Log in to like events!</Tooltip>}>
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip>Log in to like events!</Tooltip>}
+            >
               <i className="bi bi-suit-heart" />
             </OverlayTrigger>
           )}

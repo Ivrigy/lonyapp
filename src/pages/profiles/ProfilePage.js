@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Container, Button, Image, Tabs, Tab } from "react-bootstrap";
+import { Row, Col, Container, Button, Tabs, Tab } from "react-bootstrap";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import Asset from "../../components/Asset";
 import NoResults from "../../assets/no-results.png";
+import Avatar from "../../components/Avatar";
 
 import Post from "../posts/Post";
 import Event from "../events/Event";
@@ -65,7 +66,7 @@ function ProfilePage() {
       {profile?.is_owner && <ProfileEditDropdown id={profile?.id} />}
       <Row className="px-3 text-center g-0">
         <Col lg={3} className="text-lg-start">
-          <Image className={styles.ProfileImage} roundedCircle src={profile?.image} />
+          <Avatar src={profile?.image} height={135} />
         </Col>
 
         <Col lg={6}>
