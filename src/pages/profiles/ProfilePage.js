@@ -5,6 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Asset from "../../components/Asset";
 import NoResults from "../../assets/no-results.png";
 import Post from "../posts/Post";
+import Event from "../events/Event";
 import { fetchMoreData } from "../../utils/utils";
 
 import styles from "../../styles/ProfilePage.module.css";
@@ -21,6 +22,7 @@ import { ProfileEditDropdown } from "../../components/MoreDropdown";
 function ProfilePage() {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [profilePosts, setProfilePosts] = useState({ results: [] });
+  const [profileEvents, setProfileEvents] = useState({ results: [] });
 
   const currentUser = useCurrentUser();
   const { id } = useParams();
@@ -28,26 +30,31 @@ function ProfilePage() {
   const { setProfileData, handleFollow, handleUnfollow } = useSetProfileData();
   const { pageProfile } = useProfileData();
 
-  const [profile] = pageProfile.results;
+  const [profile] = pageProfile.results || [];
   const is_owner = currentUser?.username === profile?.owner;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [{ data: pageProfile }, { data: profilePosts }] = await Promise.all([
-          axiosReq.get(`/profiles/${id}/`),
-          axiosReq.get(`/posts/?owner__profile=${id}`),
-        ]);
-        setProfileData((prevState) => ({
-          ...prevState,
-          pageProfile: { results: [pageProfile] },
+        const [{ data: pageProfileData }, { data: postsData }, { data: eventsData }] =
+          await Promise.all([
+            axiosReq.get(`/profiles/${id}/`),
+            axiosReq.get(`/posts/?owner__profile=${id}`),
+            axiosReq.get(`/events/?owner__profile=${id}`),
+          ]);
+
+        setProfileData((prev) => ({
+          ...prev,
+          pageProfile: { results: [pageProfileData] },
         }));
-        setProfilePosts(profilePosts);
+        setProfilePosts(postsData);
+        setProfileEvents(eventsData);
         setHasLoaded(true);
-      } catch (err) {
-        console.log(err);
+      } catch {
+        setHasLoaded(true);
       }
     };
+    setHasLoaded(false);
     fetchData();
   }, [id, setProfileData]);
 
@@ -72,6 +79,10 @@ function ProfilePage() {
             <Col xs={3} className="my-2">
               <div>{profile?.following_count}</div>
               <div>following</div>
+            </Col>
+            <Col xs={3} className="my-2">
+              <div>{profile?.events_count}</div>
+              <div>events</div>
             </Col>
           </Row>
         </Col>
@@ -123,6 +134,30 @@ function ProfilePage() {
     </>
   );
 
+  const mainProfileEvents = (
+    <>
+      <hr />
+      <p className="text-center">{profile?.owner}'s events</p>
+      <hr />
+      {profileEvents.results.length ? (
+        <InfiniteScroll
+          children={profileEvents.results.map((evt) => (
+            <Event key={evt.id} {...evt} setEvents={setProfileEvents} />
+          ))}
+          dataLength={profileEvents.results.length}
+          loader={<Asset spinner />}
+          hasMore={!!profileEvents.next}
+          next={() => fetchMoreData(profileEvents, setProfileEvents)}
+        />
+      ) : (
+        <Asset
+          src={NoResults}
+          message={`No results found, ${profile?.owner} has no events yet.`}
+        />
+      )}
+    </>
+  );
+
   return (
     <Row>
       <Col className="py-2 p-0 p-lg-2" lg={8}>
@@ -132,6 +167,7 @@ function ProfilePage() {
             <>
               {mainProfile}
               {mainProfilePosts}
+              {mainProfileEvents}
             </>
           ) : (
             <Asset spinner />
