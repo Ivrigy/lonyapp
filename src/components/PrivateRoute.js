@@ -1,5 +1,5 @@
 import { Route, Redirect } from "react-router-dom";
-import { useCurrentUser } from "./contexts/CurrentUserContext";
+import { useCurrentUser } from "../contexts/CurrentUserContext";
 
 export default function PrivateRoute({ children, ...rest }) {
   const currentUser = useCurrentUser();
