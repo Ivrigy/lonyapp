@@ -18,7 +18,10 @@ import PopularProfiles from "./PopularProfiles";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
 import { useParams } from "react-router";
 import { axiosReq } from "../../api/axiosDefaults";
-import { useProfileData, useSetProfileData } from "../../contexts/ProfileDataContext";
+import {
+  useProfileData,
+  useSetProfileData,
+} from "../../contexts/ProfileDataContext";
 import { ProfileEditDropdown } from "../../components/MoreDropdown";
 
 function ProfilePage() {
@@ -39,12 +42,15 @@ function ProfilePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [{ data: pageProfileData }, { data: postsData }, { data: eventsData }] =
-          await Promise.all([
-            axiosReq.get(`/profiles/${id}/`),
-            axiosReq.get(`/posts/?owner__profile=${id}`),
-            axiosReq.get(`/events/?owner__profile=${id}`),
-          ]);
+        const [
+          { data: pageProfileData },
+          { data: postsData },
+          { data: eventsData },
+        ] = await Promise.all([
+          axiosReq.get(`/profiles/${id}/`),
+          axiosReq.get(`/posts/?owner__profile=${id}`),
+          axiosReq.get(`/events/?owner__profile=${id}`),
+        ]);
 
         setProfileData((prev) => ({
           ...prev,
@@ -66,7 +72,11 @@ function ProfilePage() {
       {profile?.is_owner && <ProfileEditDropdown id={profile?.id} />}
       <Row className="px-3 text-center g-0">
         <Col lg={3} className="text-lg-start">
-          <Avatar src={profile?.image} height={135} />
+          <Avatar
+            src={profile?.image}
+            height={135}
+            className={styles.ProfileImage}
+          />
         </Col>
 
         <Col lg={6}>
@@ -92,8 +102,9 @@ function ProfilePage() {
         </Col>
 
         <Col lg={3} className="text-lg-end">
-          {currentUser && !is_owner && (
-            profile?.following_id ? (
+          {currentUser &&
+            !is_owner &&
+            (profile?.following_id ? (
               <Button
                 className={`${btnStyles.Button} ${btnStyles.OutlineUnfollow} btn-sm`}
                 onClick={() => handleUnfollow(profile)}
@@ -107,8 +118,7 @@ function ProfilePage() {
               >
                 follow
               </Button>
-            )
-          )}
+            ))}
         </Col>
 
         {profile?.content && <Col className="p-3">{profile.content}</Col>}
