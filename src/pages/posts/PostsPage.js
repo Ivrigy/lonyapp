@@ -4,50 +4,55 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useLocation } from "react-router";
 
 import Post from "./Post";
 import Asset from "../../components/Asset";
 import appStyles from "../../App.module.css";
 import styles from "../../styles/PostsPage.module.css";
 import NoResults from "../../assets/no-results.png";
-import { useLocation } from "react-router";
 import { axiosReq } from "../../api/axiosDefaults";
 import { fetchMoreData } from "../../utils/utils";
 import PopularProfiles from "../profiles/PopularProfiles";
+import { useCurrentUser } from "../../contexts/CurrentUserContext";
 
 function PostsPage({ message, filter = "" }) {
   const [posts, setPosts] = useState({ results: [] });
   const [hasLoaded, setHasLoaded] = useState(false);
   const [query, setQuery] = useState("");
   const { pathname } = useLocation();
+  const currentUser = useCurrentUser();
 
   useEffect(() => {
+    let isActive = true;
+
     const fetchPosts = async () => {
       try {
-        const { data } = await axiosReq.get(
-          `/posts/?${filter}search=${query}`
-        );
-        setPosts(data);
-        setHasLoaded(true);
-      } catch (err) {
-        console.error(err);
+        const { data } = await axiosReq.get(`/posts/?${filter}search=${query}`);
+        if (isActive) {
+          setPosts(data);
+          setHasLoaded(true);
+        }
+      } catch {
+        if (isActive) setHasLoaded(true);
       }
     };
 
     setHasLoaded(false);
-    const timer = setTimeout(fetchPosts, 1000);
-    return () => clearTimeout(timer);
-  }, [filter, query, pathname]);
+    const timer = setTimeout(fetchPosts, 800);
+    return () => {
+      isActive = false;
+      clearTimeout(timer);
+    };
+  }, [filter, query, pathname, currentUser]);
 
   return (
     <Row className="h-100">
       <Col className="py-2 p-0 p-lg-2" lg={8}>
         <PopularProfiles mobile />
+
         <i className={`bi bi-search ${styles.SearchIcon}`} />
-        <Form
-          className={styles.SearchBar}
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <Form className={styles.SearchBar} onSubmit={(e) => e.preventDefault()}>
           <Form.Control
             value={query}
             onChange={(e) => setQuery(e.target.value)}
