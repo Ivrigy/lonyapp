@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Card, Stack, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import { useCurrentUser } from "../../contexts/CurrentUserContext";
@@ -40,6 +40,8 @@ const Event = (props) => {
       })
     : "";
 
+  const busy = useRef(false);
+
   const handleEdit = () => history.push(`/events/${id}/edit`);
 
   const handleDelete = async () => {
@@ -49,40 +51,49 @@ const Event = (props) => {
     } catch {}
   };
 
+  const bump = (delta, newLikeId) => {
+    if (eventPage) {
+      setEvents?.((prev) => ({
+        ...prev,
+        likes_count: Math.max(0, (prev?.likes_count ?? 0) + delta),
+        like_id: newLikeId ?? prev?.like_id ?? null,
+      }));
+    } else {
+      setEvents?.((prev) => ({
+        ...prev,
+        results: prev.results.map((e) =>
+          e.id === id
+            ? {
+                ...e,
+                likes_count: Math.max(0, e.likes_count + delta),
+                like_id: newLikeId ?? e.like_id ?? null,
+              }
+            : e
+        ),
+      }));
+    }
+  };
+
   const handleLike = async () => {
-    if (like_id) return;
+    if (busy.current) return;
+    busy.current = true;
     try {
-      const { data } = await axiosRes.post("/likes/", { event: id });
-      setEvents?.((prev) => {
-        if (prev && !prev.results) {
-          return { ...prev, likes_count: (prev.likes_count || 0) + 1, like_id: data.id };
-        }
-        return {
-          ...prev,
-          results: prev.results.map((e) =>
-            e.id === id ? { ...e, likes_count: e.likes_count + 1, like_id: data.id } : e
-          ),
-        };
-      });
+      const fd = new FormData();
+      fd.append("event", id);
+      const { data } = await axiosRes.post("/likes/", fd);
+      bump(+1, data.id);
     } catch {}
+    busy.current = false;
   };
 
   const handleUnlike = async () => {
-    if (!like_id) return;
+    if (busy.current || !like_id) return;
+    busy.current = true;
     try {
       await axiosRes.delete(`/likes/${like_id}/`);
-      setEvents?.((prev) => {
-        if (prev && !prev.results) {
-          return { ...prev, likes_count: Math.max(0, (prev.likes_count || 1) - 1), like_id: null };
-        }
-        return {
-          ...prev,
-          results: prev.results.map((e) =>
-            e.id === id ? { ...e, likes_count: e.likes_count - 1, like_id: null } : e
-          ),
-        };
-      });
+      bump(-1, null);
     } catch {}
+    busy.current = false;
   };
 
   return (
